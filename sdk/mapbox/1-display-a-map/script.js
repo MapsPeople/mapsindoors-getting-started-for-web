@@ -6,7 +6,8 @@ const mapViewOptions = {
     maxZoom: 22
 };
 mapsindoors.MapsIndoors.setMapsIndoorsApiKey('d876ff0e60bb430b8fabb145');
-const mapViewInstance = new mapsindoors.mapView.MapboxView(mapViewOptions);
+
+const mapViewInstance = new mapsindoors.mapView.MapboxV3View(mapViewOptions);
 const mapsIndoorsInstance = new mapsindoors.MapsIndoors({ mapView: mapViewInstance });
 const mapboxInstance = mapViewInstance.getMap();
 
