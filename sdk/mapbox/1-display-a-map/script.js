@@ -1,5 +1,5 @@
 const mapViewOptions = {
-    accessToken: 'pk.eyJ1IjoibWFwc3Blb3BsZSIsImEiOiJjbHV0cWo2MGUwMDA2MmtyeXV0cmZpcXQ4In0.iOwpJY4KqHVQoxA1UPEvgQ',
+    accessToken: 'pk.eyJ1IjoiZW5lcHBlciIsImEiOiJja2c5MzlqaDIwNTgwMnhwdWg5M2gycXQyIn0.3yzc8Se6Majxr2O09HNGiA',
     element: document.getElementById('map'),
     center: { lat: 30.359285384, lng: -97.7412840716576 }, // MapsPeople - Austin Office
     zoom: 17,
