@@ -2,8 +2,11 @@ const mapViewOptions = {
     accessToken: 'pk.eyJ1IjoiZW5lcHBlciIsImEiOiJja2c5MzlqaDIwNTgwMnhwdWg5M2gycXQyIn0.3yzc8Se6Majxr2O09HNGiA',
     element: document.getElementById('map'),
     center: { lng: -97.74204591828197, lat: 30.36022358949809 }, // MapsPeople - Austin Office
-    zoom: 17.1,
+    zoom: 17,
     maxZoom: 22,
+    mapsIndoorsTransitionLevel: 17,
+    lightPreset: 'dusk',
+    showMapMarkers: false
 };
 
 mapsindoors.MapsIndoors.setMapsIndoorsApiKey('02c329e6777d431a88480a09');
