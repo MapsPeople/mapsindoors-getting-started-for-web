@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MapsIndoors</title>
+    <script src="https://app.mapsindoors.com/mapsindoors/js/sdk/4.40.1/mapsindoors-4.40.1.js.gz"></script>
+    <script src='https://api.mapbox.com/mapbox-gl-js/v3.10.0/mapbox-gl.js'></script>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v3.10.0/mapbox-gl.css' rel='stylesheet' />
+</head>
+
+<body>
+    <div id="map" style="width: 720px; height: 480px;"></div>
+    <input type="text" placeholder="Search">
+    <button onclick="onSearch()">Search</button>
+    <ul id="search-results"></ul>
+    <script src="script.js"></script>
+</body>
+
+</html>
