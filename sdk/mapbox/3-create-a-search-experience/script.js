@@ -34,6 +34,15 @@ function onSearch() {
     const searchInputElement = document.querySelector('input');
     // Get list element reference
     const searchResultsElement = document.getElementById('search-results');
+    
+    // Check if input is empty
+    if (searchInputElement.value === '') {
+        // Reset search results list
+        searchResultsElement.innerHTML = null;
+        // Clear map
+        mapsIndoorsInstance.highlight();
+        return;
+    }
 
     const searchParameters = { q: searchInputElement.value };
     mapsindoors.services.LocationsService.getLocations(searchParameters).then(locations => {
@@ -48,6 +57,6 @@ function onSearch() {
         });
 
         // Filter map to only display search results
-        mapsIndoorsInstance.filter(locations.map(location => location.id), false);
+        mapsIndoorsInstance.highlight(locations.map(location => location.id), false);
     });
 }
