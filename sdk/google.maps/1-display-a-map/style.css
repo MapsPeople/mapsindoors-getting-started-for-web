@@ -1,0 +1,14 @@
+/* style.css */
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden; /* Prevent scrollbars if map is full size */
+}
+
+#map {
+  width: 100%; /* Make map fill width */
+  height: 600px; /* Set a default height */
+  margin: 0;
+  padding: 0;
+}
