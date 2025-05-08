@@ -10,7 +10,7 @@ miMapElement.addEventListener('mapsIndoorsReady', () => {
   // getMapInstance() returns a Promise, so we use .then() to wait for it
   miMapElement.getMapInstance().then((mapInstance) => {
     // Example: Set the map center to the MapsPeople Austin Office location
-    mapInstance.setCenter({ lat: 30.359285384, lng: -97.7412840716576 });
+    mapInstance.setCenter({ lat: 30.36026660239549, lng: -97.74223633857213 });
   })
   .catch((error) => {
       console.error('Error getting map instance:', error);
