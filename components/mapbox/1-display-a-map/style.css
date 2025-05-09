@@ -6,7 +6,7 @@ html, body {
     overflow: hidden; /* Prevent scrollbars if map is full size */
 }
 
-mi-map-googlemaps {
+mi-map-mapbox {
   display: block;
   width: 100%; /* Make map fill width */
   height: 100%;
