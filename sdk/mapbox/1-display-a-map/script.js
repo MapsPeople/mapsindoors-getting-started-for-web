@@ -19,9 +19,6 @@ const mapsIndoorsInstance = new mapsindoors.MapsIndoors({
     mapView: mapViewInstance,
 });
 
-// Get the underlying Mapbox map instance from the MapsIndoors map view
-const mapboxInstance = mapViewInstance.getMap();
-
 // Add MapsIndoors controls to the Mapbox map (e.g., Floor Selector)
 
 // Create a new HTML div element to host the floor selector
@@ -29,6 +26,9 @@ const floorSelectorElement = document.createElement('div');
 
 // Create a new FloorSelector instance, linking it to the HTML element and the main MapsIndoors instance
 new mapsindoors.FloorSelector(floorSelectorElement, mapsIndoorsInstance);
+
+// Get the underlying Mapbox map instance from the MapsIndoors map view
+const mapboxInstance = mapViewInstance.getMap();
 
 // Add the floor selector HTML element to the Mapbox map using Mapbox's addControl method
 // We wrap the element in an object implementing the IControl interface expected by addControl
