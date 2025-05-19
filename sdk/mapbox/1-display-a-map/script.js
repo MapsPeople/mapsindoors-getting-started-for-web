@@ -1,10 +1,16 @@
+// script.js
+
+// Define options for the MapsIndoors Mapbox view
 const mapViewOptions = {
     accessToken: 'pk.eyJ1IjoiZW5lcHBlciIsImEiOiJja2c5MzlqaDIwNTgwMnhwdWg5M2gycXQyIn0.3yzc8Se6Majxr2O09HNGiA',
     element: document.getElementById('map'),
-    // MapsPeople - Austin Office
-    center: { lat: 30.36026660239549, lng: -97.74223633857213 },
+    // Initial map center (MapsPeople - Austin Office example)
+    center: { lng: -97.74204591828197, lat: 30.36022358949809 },
+    // Initial zoom level
     zoom: 17,
+    // Maximum zoom level
     maxZoom: 22,
+    // The zoom level at which MapsIndoors transitions
     mapsIndoorsTransitionLevel: 16,
 };
 
@@ -17,6 +23,7 @@ const mapViewInstance = new mapsindoors.mapView.MapboxV3View(mapViewOptions);
 // Create a new MapsIndoors instance, passing the map view
 const mapsIndoorsInstance = new mapsindoors.MapsIndoors({
     mapView: mapViewInstance,
+    // Set the venue ID to load the map for a specific venue
     venue: 'dfea941bb3694e728df92d3d',
 });
 

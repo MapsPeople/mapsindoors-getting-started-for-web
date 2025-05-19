@@ -1,6 +1,6 @@
 // script.js
 
-// Define options for the MapsIndoors Mapbox view (Keep this from the previous step)
+// Define options for the MapsIndoors Mapbox view
 const mapViewOptions = {
     accessToken: 'pk.eyJ1IjoiZW5lcHBlciIsImEiOiJja2c5MzlqaDIwNTgwMnhwdWg5M2gycXQyIn0.3yzc8Se6Majxr2O09HNGiA',
     element: document.getElementById('map'),
@@ -14,22 +14,23 @@ const mapViewOptions = {
     mapsIndoorsTransitionLevel: 16,
 };
 
-//Set the MapsIndoors API key (Keep this from the previous step)
+// Set the MapsIndoors API key
 mapsindoors.MapsIndoors.setMapsIndoorsApiKey('02c329e6777d431a88480a09');
 
-// Create a new instance of the MapsIndoors Mapbox view (for Mapbox GL JS v3) (Keep this from the previous step)
+// Create a new instance of the MapsIndoors Mapbox view (for Mapbox GL JS v3)
 const mapViewInstance = new mapsindoors.mapView.MapboxV3View(mapViewOptions);
-// Create a new MapsIndoors instance, passing the map view (Keep this from the previous step)
+
+// Create a new MapsIndoors instance, passing the map view
 const mapsIndoorsInstance = new mapsindoors.MapsIndoors({
     mapView: mapViewInstance,
     // Set the venue ID to load the map for a specific venue
     venue: 'dfea941bb3694e728df92d3d',
 });
 
-// Get the underlying Mapbox map instance (Keep this from the previous step)
+// Get the underlying Mapbox map instance
 const mapboxInstance = mapViewInstance.getMap();
 
-// Floor Selector (Keep this from the previous step)
+// Floor Selector
 // Create a new HTML div element to host the floor selector
 const floorSelectorElement = document.createElement('div');
 // Create a new FloorSelector instance, linking it to the HTML element and the main MapsIndoors instance
@@ -71,7 +72,7 @@ function onSearch() {
     // Clear map highlighting
     mapsIndoorsInstance.highlight();
     // Deselect any selected location
-    mapsIndoorsInstance.selectLocation();
+    mapsindoorsInstance.selectLocation();
 
     // Check if the query is too short (less than 3 characters) or empty
     if (query.length < 3) {
@@ -117,6 +118,6 @@ function onSearch() {
         searchResultsElement.classList.remove('hidden');
 
         // Filter map to only display search results by highlighting them
-        mapsIndoorsInstance.highlight(locations.map(location => location.id));
+        mapsindoorsInstance.highlight(locations.map(location => location.id));
     });
 }
