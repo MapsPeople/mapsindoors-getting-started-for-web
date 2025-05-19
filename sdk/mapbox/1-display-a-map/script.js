@@ -17,6 +17,7 @@ const mapViewInstance = new mapsindoors.mapView.MapboxV3View(mapViewOptions);
 // Create a new MapsIndoors instance, passing the map view
 const mapsIndoorsInstance = new mapsindoors.MapsIndoors({
     mapView: mapViewInstance,
+    venue: 'dfea941bb3694e728df92d3d',
 });
 
 // Add MapsIndoors controls to the Mapbox map (e.g., Floor Selector)
