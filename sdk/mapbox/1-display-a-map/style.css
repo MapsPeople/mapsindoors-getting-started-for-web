@@ -1,15 +1,20 @@
 /* style.css */
+
+/* Use flexbox for the main layout */
 html, body {
     height: 100%;
     margin: 0;
     padding: 0;
     overflow: hidden; /* Prevent scrollbars if map is full size */
+    display: flex;
+    flex-direction: column; /* Stack children vertically if needed later */
 }
 
+/* Style for the map container */
 #map {
+  /* Make map fill available space */
+  flex-grow: 1;
   width: 100%; /* Make map fill width */
-  height: 100%;
-  max-height: 600px;
   margin: 0;
   padding: 0;
 }
