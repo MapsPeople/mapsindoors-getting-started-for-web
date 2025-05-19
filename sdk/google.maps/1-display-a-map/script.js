@@ -9,7 +9,7 @@ const mapViewOptions = {
     maxZoom: 22,
 };
 
-// Set the MapsIndoors API key
+//Set the MapsIndoors API key
 mapsindoors.MapsIndoors.setMapsIndoorsApiKey('02c329e6777d431a88480a09');
 
 // Create a new instance of the Google Maps view
@@ -17,7 +17,9 @@ const mapViewInstance = new mapsindoors.mapView.GoogleMapsView(mapViewOptions);
 
 // Create a new MapsIndoors instance, passing the map view
 const mapsIndoorsInstance = new mapsindoors.MapsIndoors({
-    mapView: mapViewInstance
+    mapView: mapViewInstance,
+    // Set the venue ID to load the map for a specific venue
+    venue: 'dfea941bb3694e728df92d3d',
 });
 
 // Create a new element to host the floor selector.

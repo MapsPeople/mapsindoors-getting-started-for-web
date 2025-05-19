@@ -2,22 +2,26 @@
 
 // Define options for the Google Maps view
 const mapViewOptions = {
-    element: document.getElementById('map'),
-    center: { lat: 30.36026660239549, lng: -97.74223633857213 },
-    zoom: 17,
-    maxZoom: 22,
+  element: document.getElementById('map'),
+  // MapsPeople - Austin Office
+  center: { lat: 30.36026660239549, lng: -97.74223633857213 },
+  zoom: 17,
+  maxZoom: 22,
 };
 
-// Set the MapsIndoors API key
-mapsindoors.MapsIndoors.setMapsIndoorsApiKey('02c329e6777d431a88480a09'); // Replace with your key or demo key
+//Set the MapsIndoors API key
+mapsindoors.MapsIndoors.setMapsIndoorsApiKey('02c329e6777d431a88480a09');
 
 // Create a new instance of the Google Maps view
 const mapViewInstance = new mapsindoors.mapView.GoogleMapsView(mapViewOptions);
 
 // Create a new MapsIndoors instance, passing the map view
 const mapsIndoorsInstance = new mapsindoors.MapsIndoors({
-    mapView: mapViewInstance
+    mapView: mapViewInstance,
+    // Set the venue ID to load the map for a specific venue
+    venue: 'dfea941bb3694e728df92d3d',
 });
+
 
 // Create a new element to host the floor selector.
 const floorSelectorElement = document.createElement('div');
@@ -29,86 +33,82 @@ new mapsindoors.FloorSelector(floorSelectorElement, mapsIndoorsInstance);
 const googleMapsInstance = mapViewInstance.getMap();
 
 // Add the floor selector to the Google Maps controls
-// Using a setTimeout to wait briefly for the Google Maps API to be ready if needed
-// A more robust solution would use the Google Maps API's callback parameter
-setTimeout(() => {
-    if (googleMapsInstance && google.maps && google.maps.ControlPosition) {
-        googleMapsInstance.controls[google.maps.ControlPosition.RIGHT_TOP].push(floorSelectorElement);
-    } else {
-        console.error('Google Maps instance or ControlPosition not available to add Floor Selector.');
-    }
-}, 0);
+googleMapsInstance.controls[google.maps.ControlPosition.RIGHT_TOP].push(floorSelectorElement);
 
+/*
+ * Search Functionality
+ */
 
-// --- Search Functionality (New Code for this guide) ---
-
-// Get references to the search elements
-const searchInput = document.getElementById('search-input');
-const searchButton = document.getElementById('search-button');
+// Get references to the search input and results list elements
+const searchInputElement = document.querySelector('input');
 const searchResultsElement = document.getElementById('search-results');
 
-// Add event listener to the search button
-if (searchButton) { // Check if button element exists
-    searchButton.addEventListener('click', onSearch);
-} else {
-    console.error('Search button element not found!');
-}
+// Initially hide the search results list
+searchResultsElement.classList.add('hidden');
 
-// Implement the search function
+// Add an event listener to the search input for 'input' events
+// This calls the onSearch function every time the user types in the input field
+searchInputElement.addEventListener('input', onSearch);
+
+// Function to perform the search and update the results list and map highlighting
 function onSearch() {
-    const query = searchInput.value;
+    // Get the current value from the search input
+    const query = searchInputElement.value;
+    // Get the current venue from the MapsIndoors instance
+    const currentVenue = mapsIndoorsInstance.getVenue();
 
-    if (query.trim() === '') {
-        // Clear results and remove highlight if search query is empty
-        displaySearchResults([]); // Call with empty array to clear list
-        mapsIndoorsInstance.highlight(null); // Removes any highlights
-        return; // Exit the function
-    }
-
-    // Define search parameters
-    const searchParameters = { q: query };
-
-    // Call MapsIndoors LocationsService to get locations
-    mapsindoors.services.LocationsService.getLocations(searchParameters)
-        .then(locations => {
-            // Process and display search results
-            displaySearchResults(locations);
-
-            // Highlight search results on the map
-            highlightLocationsOnMap(locations);
-        })
-        .catch(error => {
-            console.error('Error during search:', error);
-            searchResultsElement.innerHTML = '<li>Error performing search.</li>'; // Display a simple error message in the list
-            mapsIndoorsInstance.highlight(null); // Removes any highlights
-        });
-}
-
-// Function to display search results in the list
-function displaySearchResults(locations) {
-    // Clear previous results
+    // Clear previous search results
     searchResultsElement.innerHTML = null;
+    // Clear map highlighting
+    mapsIndoorsInstance.highlight();
+    // Deselect any selected location
+    mapsIndoorsInstance.selectLocation();
 
-    if (!locations || locations.length === 0) {
-        searchResultsElement.innerHTML = '<li>No results found.</li>';
-        mapsIndoorsInstance.highlight(null); // Removes any highlight
-        return; // Exit the function
+    // Check if the query is too short (less than 3 characters) or empty
+    if (query.length < 3) {
+        // Hide the results list if the query is too short or empty
+        searchResultsElement.classList.add('hidden');
+        return; // Stop here
     }
 
-    // Append new search results
-    locations.forEach(location => {
-        const listElement = document.createElement('li');
-        // Display location name (and potentially other properties)
-        listElement.innerHTML = location.properties.name;
-        // Optional: Add data attribute for location ID to the list item
-        listElement.dataset.locationId = location.id;
-        searchResultsElement.appendChild(listElement);
-    });
-}
+    // Define search parameters with the current input value
+    // Include the current venue name in the search parameters
+    const searchParameters = { q: query, venue: currentVenue ? currentVenue.name : undefined };
 
-// Function to highlight search results on the map
-function highlightLocationsOnMap(locations) {
-    const locationIds = locations.map(location => location.id);
-    // Highlight locations based on their IDs
-    mapsIndoorsInstance.highlight(locationIds);
+    // Call the MapsIndoors LocationsService to get locations based on the search query
+    mapsindoors.services.LocationsService.getLocations(searchParameters).then(locations => {
+
+        // If no locations are found, display a "No results found" message
+        if (locations.length === 0) {
+            const noResultsItem = document.createElement('li');
+            noResultsItem.textContent = 'No results found';
+            searchResultsElement.appendChild(noResultsItem);
+            // Ensure the results list is visible to show the "No results found" message
+            searchResultsElement.classList.remove('hidden');
+            return; // Stop here if no results
+        }
+
+        // Append new search results to the list
+        locations.forEach(location => {
+            const listElement = document.createElement('li');
+            // Display the location name
+            listElement.innerHTML = location.properties.name;
+            // Store the location ID on the list item for easy access
+            listElement.dataset.locationId = location.id;
+
+            // Add a click event listener to each list item
+            listElement.addEventListener('click', function () {
+                mapsIndoorsInstance.selectLocation(location);
+            });
+
+            searchResultsElement.appendChild(listElement);
+        });
+
+        // Show the results list now that it has content
+        searchResultsElement.classList.remove('hidden');
+
+        // Filter map to only display search results by highlighting them
+        // The second argument 'false' means to not clear other highlights
+        mapsIndoorsInstance.highlight(locations.map(location => location.id), false);
+    });
 }
