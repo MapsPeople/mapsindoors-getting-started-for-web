@@ -63,7 +63,8 @@ searchInputElement.addEventListener('input', onSearch);
 function onSearch() {
     // Get the current value from the search input
     const query = searchInputElement.value;
-    const venue = mapsIndoorsInstance.getVenue(); // Get the current venue from the map view
+    // Get the current venue from the MapsIndoors instance
+    const currentVenue = mapsIndoorsInstance.getVenue();
 
     // Clear previous search results
     searchResultsElement.innerHTML = null;
@@ -80,7 +81,8 @@ function onSearch() {
     }
 
     // Define search parameters with the current input value
-    const searchParameters = { q: query, venue: venue.name };
+    // Include the current venue name in the search parameters
+    const searchParameters = { q: query, venue: currentVenue ? currentVenue.name : undefined };
 
     // Call the MapsIndoors LocationsService to get locations based on the search query
     mapsindoors.services.LocationsService.getLocations(searchParameters).then(locations => {
@@ -115,8 +117,6 @@ function onSearch() {
         searchResultsElement.classList.remove('hidden');
 
         // Filter map to only display search results by highlighting them
-        // The second argument 'false' means to not clear other highlights
-        mapsIndoorsInstance.highlight(locations.map(location => location.id), false);
+        mapsIndoorsInstance.highlight(locations.map(location => location.id));
     });
 }
-
