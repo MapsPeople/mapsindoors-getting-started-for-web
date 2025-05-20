@@ -2,7 +2,7 @@
 
 // Define options for the MapsIndoors Mapbox view
 const mapViewOptions = {
-    accessToken: 'pk.eyJ1IjoiZW5lcHBlciIsImEiOiJja2c5MzlqaDIwNTgwMnhwdWg5M2gycXQyIn0.3yzc8Se6Majxr2O09HNGiA',
+    accessToken: 'pk.eyJ1IjoiZW5lcHBlciIsImEiOiJjbGdxamhnMzYxYTg1M2VtbXJuNnR3bHZ3In0.QNxvh2UcVhk6mG26d9R8Ww',
     element: document.getElementById('map'),
     // Initial map center (MapsPeople - Austin Office example)
     center: { lng: -97.74204591828197, lat: 30.36022358949809 },
