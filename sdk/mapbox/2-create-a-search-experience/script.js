@@ -72,7 +72,7 @@ function onSearch() {
     // Clear map highlighting
     mapsIndoorsInstance.highlight();
     // Deselect any selected location
-    mapsindoorsInstance.selectLocation();
+    mapsIndoorsInstance.selectLocation();
 
     // Check if the query is too short (less than 3 characters) or empty
     if (query.length < 3) {
@@ -118,6 +118,6 @@ function onSearch() {
         searchResultsElement.classList.remove('hidden');
 
         // Filter map to only display search results by highlighting them
-        mapsindoorsInstance.highlight(locations.map(location => location.id));
+        mapsIndoorsInstance.highlight(locations.map(location => location.id));
     });
 }
