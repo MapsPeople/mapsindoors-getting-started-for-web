@@ -222,22 +222,25 @@ Add the following logic for directions and UI state management:
 ```javascript
 // script.js
 
-// --- Map and SDK Setup ---
-// Initialize the map, MapsIndoors, and add the floor selector
+// Define options for the MapsIndoors Mapbox view
 const mapViewOptions = {
-    accessToken: 'pk.eyJ1IjoiZW5lcHBlciIsImEiOiJjbGdxamhnMzYxYTg1M2VtbXJuNnR3bHZ3In0.QNxvh2UcVhk6mG26d9R8Ww', // Demo key
+    accessToken: 'YOUR_MAPBOX_ACCESS_TOKEN', // Replace with your Mapbox token
     element: document.getElementById('map'),
-    center: { lng: -97.74204591828197, lat: 30.36022358949809 },
+    center: { lng: -97.74204591828197, lat: 30.36022358949809 }, // Example: MapsPeople Austin Office
     zoom: 17,
     maxZoom: 22,
     mapsIndoorsTransitionLevel: 16,
 };
-mapsindoors.MapsIndoors.setMapsIndoorsApiKey('02c329e6777d431a88480a09'); // Demo key
+
+// Set the MapsIndoors API key
+mapsindoors.MapsIndoors.setMapsIndoorsApiKey('YOUR_MAPSINDOORS_API_KEY'); // Replace with your MapsIndoors API key
+
 const mapViewInstance = new mapsindoors.mapView.MapboxV3View(mapViewOptions);
 const mapsIndoorsInstance = new mapsindoors.MapsIndoors({
     mapView: mapViewInstance,
-    venue: 'dfea941bb3694e728df92d3d', // Demo venue
+    venue: 'YOUR_MAPSINDOORS_VENUE_ID', // Replace with your venue ID
 });
+
 const searchUIElement = document.getElementById('search-ui');
 const detailsUIElement = document.getElementById('details-ui');
 const directionsUIElement = document.getElementById('directions-ui');
