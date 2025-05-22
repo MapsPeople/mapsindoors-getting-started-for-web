@@ -36,21 +36,26 @@ const floorSelectorElement = document.createElement('div');
 // Create a new FloorSelector instance, linking it to the HTML element and the main MapsIndoors instance
 new mapsindoors.FloorSelector(floorSelectorElement, mapsIndoorsInstance);
 // Add the floor selector HTML element to the Mapbox map using Mapbox's addControl method
+// We wrap the element in an object implementing the IControl interface expected by addControl
 mapboxInstance.addControl({
     onAdd: function () {
         // This function is called when the control is added to the map.
         // It should return the control's DOM element.
         return floorSelectorElement;
     },
-    onRemove: function () { /* Clean up if needed */ },
-}, 'top-right'); // Optional: Specify a position
+    onRemove: function () {
+        // This function is called when the control is removed from the map.
+        // Clean up any event listeners or resources here.
+        floorSelectorElement.parentNode.removeChild(floorSelectorElement);
+    },
+}, 'top-right'); // Optional: Specify a position ('top-left', 'top-right', 'bottom-left', 'bottom-right')
 
 /*
  * Search Functionality
  */
 
 // Get references to the search input and results list elements
-const searchInputElement = document.querySelector('input');
+const searchInputElement = document.getElementById('search-input');
 const searchResultsElement = document.getElementById('search-results');
 
 // Initially hide the search results list
@@ -108,6 +113,11 @@ function onSearch() {
 
             // Add a click event listener to each list item
             listElement.addEventListener('click', function () {
+                // Move the map to the selected location
+                mapsIndoorsInstance.goTo(location);
+                // Ensure that the map shows the correct floor
+                mapsIndoorsInstance.setFloor(location.properties.floor);
+                // Select the location on the map
                 mapsIndoorsInstance.selectLocation(location);
             });
 

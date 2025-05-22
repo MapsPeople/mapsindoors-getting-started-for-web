@@ -1,40 +1,51 @@
 /* style.css */
 
-/* Ensure html and body take up full height */
+/* Use flexbox for the main layout */
 html, body {
     height: 100%;
     margin: 0;
     padding: 0;
-    /* Prevent scrollbars if map is full size */
-    overflow: hidden;
-    /* Use flexbox to arrange map and search container */
+    overflow: hidden; /* Prevent scrollbars if map is full size */
     display: flex;
-    flex-direction: column; /* Stack children vertically */
+    flex-direction: column; /* Stack children vertically if needed later */
 }
 
 /* Style for the map container */
 #map {
-  /* Make map fill available height */
-  flex-grow: 1; /* Allow map to take up remaining vertical space */
+  /* Make map fill available space */
+  flex-grow: 1;
   width: 100%; /* Make map fill width */
   margin: 0;
   padding: 0;
 }
 
-/* Style for the search container */
-#search-container {
+
+/* Style for the information panel container */
+.panel {
     position: absolute; /* Position over the map */
     top: 10px; /* Distance from the top */
     left: 10px; /* Distance from the left */
-    z-index: 1; /* Ensure it's above the map */
+    z-index: 10; /* Ensure it's above the map and other elements */
     background-color: white; /* White background for readability */
     padding: 10px;
     border-radius: 5px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* Add a subtle shadow */
-    display: flex; /* Use flexbox for input and results */
-    flex-direction: column; /* Stack input and results vertically */
     max-height: 50%; /* Limit maximum height */
-    overflow-y: auto; /* Add scroll if results exceed max-height */
+    overflow-y: auto; /* Add scroll if content exceeds max-height */
+    border: 1px solid #ccc; /* Add border for clarity */
+    width: 300px;
+}
+
+/* Class to apply flex display and column direction */
+.flex-column {
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* Space between elements */
+}
+
+/* Class to hide elements */
+.hidden {
+    display: none;
 }
 
 /* Style for the search input field */
@@ -50,7 +61,6 @@ html, body {
     list-style: none; /* Remove default list bullets */
     padding: 0;
     margin: 0;
-    margin-top: 10px; /* Add space above the results list */
 }
 
 /* Style for individual search result items */
@@ -68,9 +78,4 @@ html, body {
 /* Hover effect for search result items */
 #search-results li:hover {
     background-color: #f0f0f0; /* Highlight on hover */
-}
-
-/* CSS class to hide elements */
-.hidden {
-    display: none;
 }
