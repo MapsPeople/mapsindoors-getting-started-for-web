@@ -48,7 +48,7 @@ Open your `index.html` file. The primary structural change to your HTML is the i
 
     <!-- New search panel for user interaction -->
     <div class="panel">
-        <div class="flex-column">
+        <div id="search-ui" class="flex-column">
             <!-- Input field for users to type search queries -->
             <input type="text" id="search-input" placeholder="Search for a location...">
             <!-- Unordered list to display search results dynamically -->
@@ -65,7 +65,7 @@ Open your `index.html` file. The primary structural change to your HTML is the i
 **Explanation of index.html updates:**
 
 * A new `div` element with the class `panel` is added. This `div` serves as the main container for all search-related UI elements.
-* Inside the `panel`, another `div` with the class `flex-column` is introduced to arrange the search input and results list vertically.
+* Inside the `panel`, another `div` with the id `search-ui` and the class `flex-column` is introduced to arrange the search input and results list vertically.
 * An `<input>` element with `id="search-input"` is the text field for user search queries.
 * An `<ul>` (unordered list) element with `id="search-results"` will be dynamically populated with locations matching the user's query.
 
