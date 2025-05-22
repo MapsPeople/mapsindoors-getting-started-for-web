@@ -106,7 +106,7 @@ html, body {
     padding: 10px; /* Adds 10px of space inside the panel, around its content. */
     border-radius: 5px; /* Rounds the corners of the panel for a softer look. */
     box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* Adds a subtle shadow effect, giving the panel a sense of depth. */
-    max-height: 50%; /* Limits the panel's maximum height to 50% of its container's height, preventing it from becoming too large. */
+    max-height: 80%; /* Limits the panel's maximum height to 80% of its container's height, preventing it from becoming too large. */
     overflow-y: auto; /* Adds a vertical scrollbar if the content inside the panel exceeds its max-height. */
     border: 1px solid #ccc; /* Adds a light gray border around the panel for better visual separation. */
     width: 300px; /* Sets a fixed width for the panel. */

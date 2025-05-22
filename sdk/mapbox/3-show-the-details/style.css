@@ -29,7 +29,7 @@ html, body {
     padding: 10px;
     border-radius: 5px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* Add a subtle shadow */
-    max-height: 50%; /* Limit maximum height */
+    max-height: 80%; /* Limit maximum height */
     overflow-y: auto; /* Add scroll if content exceeds max-height */
     border: 1px solid #ccc; /* Add border for clarity */
     width: 300px;

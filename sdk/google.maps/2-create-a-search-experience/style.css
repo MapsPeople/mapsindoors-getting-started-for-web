@@ -33,7 +33,7 @@ html, body {
     box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* Add a subtle shadow */
     display: flex; /* Use flexbox for input and results */
     flex-direction: column; /* Stack input and results vertically */
-    max-height: 50%; /* Limit maximum height */
+    max-height: 80%; /* Limit maximum height */
     overflow-y: auto; /* Add scroll if results exceed max-height */
 }
 
