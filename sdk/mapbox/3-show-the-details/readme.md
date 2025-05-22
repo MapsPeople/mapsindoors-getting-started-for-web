@@ -94,7 +94,7 @@ Modify your `style.css` file to add styles for the new location details UI eleme
     padding: 10px;
     border-radius: 5px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* Add a subtle shadow */
-    max-height: calc(100% - 40px); /* Adjust max-height to prevent overflow with details */
+    max-height: 80%; /* Limits max-height to prevent overflow with details */
     overflow-y: auto; /* Add scroll if content exceeds max-height */
     border: 1px solid #ccc; /* Add border for clarity */
     width: 300px;
