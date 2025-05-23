@@ -241,6 +241,17 @@ const mapsIndoorsInstance = new mapsindoors.MapsIndoors({
     venue: 'YOUR_MAPSINDOORS_VENUE_ID', // Replace with your venue ID
 });
 
+// Get the underlying Mapbox map instance
+const mapboxInstance = mapViewInstance.getMap();
+
+// Floor Selector (from Step 1)
+const floorSelectorElement = document.createElement('div');
+new mapsindoors.FloorSelector(floorSelectorElement, mapsIndoorsInstance);
+mapboxInstance.addControl({
+    onAdd: function () { return floorSelectorElement; },
+    onRemove: function () { floorSelectorElement.parentNode.removeChild(floorSelectorElement); },
+}, 'top-right');
+
 const searchUIElement = document.getElementById('search-ui');
 const detailsUIElement = document.getElementById('details-ui');
 const directionsUIElement = document.getElementById('directions-ui');
