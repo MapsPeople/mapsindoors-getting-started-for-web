@@ -11,7 +11,7 @@
 ## Prerequisites
 
 - Completion of [Step 3: Show Location Details](../3-show-the-details/readme.md). Your app should already support searching for locations and viewing details.
-- MapsIndoors API Key and Mapbox Access Token set up as in previous steps (demo keys are used in the sample code below).
+- Your MapsIndoors API Key and Mapbox Access Token should be correctly set up. We will continue using the demo API key 02c329e6777d431a88480a09 and venue ID dfea941bb3694e728df92d3d for this example.
 
 ## Update index.html
 
