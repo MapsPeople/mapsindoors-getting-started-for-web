@@ -37,13 +37,9 @@ const floorSelectorElement = document.createElement('div');
 new mapsindoors.FloorSelector(floorSelectorElement, mapsIndoorsInstance);
 // Add the floor selector HTML element to the Mapbox map using Mapbox's addControl method
 mapboxInstance.addControl({
-    onAdd: function () {
-        // This function is called when the control is added to the map.
-        // It should return the control's DOM element.
-        return floorSelectorElement;
-    },
-    onRemove: function () { /* Clean up if needed */ },
-}, 'top-right'); // Optional: Specify a position
+    onAdd: function () { return floorSelectorElement; },
+    onRemove: function () { floorSelectorElement.parentNode.removeChild(floorSelectorElement); },
+}, 'top-right');
 
 
 /*
