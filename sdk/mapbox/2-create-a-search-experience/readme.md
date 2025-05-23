@@ -285,7 +285,6 @@ function onSearch() {
 
 **Explanation of script.js updates:**
 
-* **Initialization**: The script starts by setting up `mapViewOptions`, initializing `mapsindoors.MapsIndoors.setMapsIndoorsApiKey()`, `mapsindoors.mapView.MapboxV3View()`, and `mapsindoors.MapsIndoors()`, and adding the `FloorSelector` control, similar to Step 1. Remember to replace placeholder tokens/keys (`YOUR_MAPBOX_ACCESS_TOKEN`, `YOUR_MAPSINDOORS_API_KEY`, `YOUR_MAPSINDOORS_VENUE_ID`) with your actual credentials.
 * **DOM Element References**: `searchInputElement` and `searchResultsElement` get references to the HTML input field and the unordered list for displaying results, respectively.
 * **Initial State**: The `searchResultsElement` is hidden by default using the `.hidden` CSS class.
 * **Event Listener**: An `input` event listener is attached to `searchInputElement`. This calls the `onSearch` function each time the user types into the search field.
