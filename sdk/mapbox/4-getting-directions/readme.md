@@ -251,107 +251,171 @@ mapboxInstance.addControl({
     onAdd: function () { return floorSelectorElement; },
     onRemove: function () { floorSelectorElement.parentNode.removeChild(floorSelectorElement); },
 }, 'top-right');
+/*
+ * Search Functionality (Modified for dynamic content)
+ */
 
+// Get references to the search input and results list elements
+const searchInputElement = document.getElementById('search-input');
+const searchResultsElement = document.getElementById('search-results');
+const searchContainerElement = document.getElementById('search-container'); // Get the main container
+
+// Add an event listener to the search input for 'input' events
+searchInputElement.addEventListener('input', onSearch);
+
+// Function to perform the search and update the results list and map highlighting
+function onSearch() {
+    const query = searchInputElement.value;
+    const currentVenue = mapsIndoorsInstance.getVenue();
+
+    // Clear previous search results and hide the list
+    searchResultsElement.innerHTML = null;
+    searchResultsElement.classList.add('hidden'); // Hide results list when typing
+    // Clear map highlighting and deselect location
+    mapsIndoorsInstance.highlight();
+    mapsIndoorsInstance.selectLocation();
+    // Ensure search UI is visible and details UI is hidden
+    showSearchUI();
+
+
+    if (query.length < 3) {
+        return; // Stop here
+    }
+
+    const searchParameters = { q: query, venue: currentVenue ? currentVenue.name : undefined };
+
+    mapsindoors.services.LocationsService.getLocations(searchParameters).then(locations => {
+        if (locations.length === 0) {
+            const noResultsItem = document.createElement('li');
+            noResultsItem.textContent = 'No results found';
+            searchResultsElement.appendChild(noResultsItem);
+            searchResultsElement.classList.remove('hidden'); // Show list to display "No results"
+            return;
+        }
+
+        locations.forEach(location => {
+            const listElement = document.createElement('li');
+            listElement.textContent = location.properties.name; // Display location name
+
+            // Add click event listener to show details in the same container
+            listElement.addEventListener('click', () => showDetailsInSearchContainer(location));
+
+            searchResultsElement.appendChild(listElement);
+        });
+
+        searchResultsElement.classList.remove('hidden'); // Show results list
+    });
+}
+
+// --- UI State Management Functions ---
 const searchUIElement = document.getElementById('search-ui');
 const detailsUIElement = document.getElementById('details-ui');
 const directionsUIElement = document.getElementById('directions-ui');
-const searchInputElement = document.getElementById('search-input');
-const searchResultsElement = document.getElementById('search-results');
-const detailsNameElement = document.getElementById('details-name');
-const detailsDescriptionElement = document.getElementById('details-description');
-const detailsCloseButton = document.getElementById('details-close');
-const detailsDirectionsButton = document.getElementById('details-directions');
-const directionsCloseButton = document.getElementById('directions-close');
-const originInputElement = document.getElementById('origin-input');
-const destinationInputElement = document.getElementById('destination-input');
-const getDirectionsButton = document.getElementById('get-directions');
-const stepIndicator = document.getElementById('step-indicator');
-const prevStepButton = document.getElementById('prev-step');
-const nextStepButton = document.getElementById('next-step');
-let currentDetailsLocation = null;
-let selectedOrigin = null;
-let selectedDestination = null;
-let currentRoute = null;
-let directionsRenderer = null;
 
-// --- UI State Management Functions ---
 function showSearchUI() {
-    hideDetailsUI();
-    hideDirectionsUI();
+    hideDetailsUI(); // Ensure details UI is hidden
+    hideDirectionsUI(); // Ensure directions UI is hidden
     searchUIElement.classList.add('flex-column');
     searchUIElement.classList.remove('hidden');
     searchInputElement.focus();
 }
-function hideSearchUI() {
-    searchUIElement.classList.add('hidden');
-    searchUIElement.classList.remove('flex-column');
-}
+
 function showDetailsUI() {
-    hideSearchUI();
-    hideDirectionsUI();
+    hideSearchUI(); // Ensure search UI is hidden
+    hideDirectionsUI(); // Ensure directions UI is hidden
     detailsUIElement.classList.add('flex-column');
     detailsUIElement.classList.remove('hidden');
 }
-function hideDetailsUI() {
-    detailsUIElement.classList.add('hidden');
-    detailsUIElement.classList.remove('flex-column');
+
+function hideSearchUI() {
+    searchUIElement.classList.remove('flex-column');
+    searchUIElement.classList.add('hidden');
 }
+
+function hideDetailsUI() {
+    detailsUIElement.classList.remove('flex-column');
+    detailsUIElement.classList.add('hidden');
+}
+
 function showDirectionsUI() {
     hideSearchUI();
     hideDetailsUI();
     directionsUIElement.classList.add('flex-column');
     directionsUIElement.classList.remove('hidden');
 }
+
 function hideDirectionsUI() {
-    directionsUIElement.classList.add('hidden');
     directionsUIElement.classList.remove('flex-column');
+    directionsUIElement.classList.add('hidden');
 }
 
-// --- Event Listeners ---
-searchInputElement.addEventListener('input', onSearch);
-function onSearch() {
-    const query = searchInputElement.value;
-    const currentVenue = mapsIndoorsInstance.getVenue();
-    searchResultsElement.innerHTML = '';
-    if (query.length < 3) return;
-    const searchParameters = { q: query, venue: currentVenue ? currentVenue.name : undefined };
-    mapsindoors.services.LocationsService.getLocations(searchParameters).then(locations => {
-        if (locations.length === 0) {
-            const noResultsItem = document.createElement('li');
-            noResultsItem.textContent = 'No results found';
-            searchResultsElement.appendChild(noResultsItem);
-            return;
-        }
-        locations.forEach(location => {
-            const listElement = document.createElement('li');
-            listElement.textContent = location.properties.name;
-            listElement.addEventListener('click', () => {
-                selectLocation(location);
-            });
-            searchResultsElement.appendChild(listElement);
-        });
-    });
-}
-function selectLocation(location) {
+/*
+ * Location Details Functionality (Implemented within the search container)
+ */
+
+// Get references to the static details view elements
+const detailsNameElement = document.getElementById('details-name');
+const detailsDescriptionElement = document.getElementById('details-description');
+const detailsCloseButton = document.getElementById('details-close');
+
+// Variable to store the location currently shown in details
+let currentDetailsLocation = null;
+
+// Function to show the details view for a given location within the search container
+function showDetailsInSearchContainer(location) {
     currentDetailsLocation = location;
     detailsNameElement.textContent = location.properties.name;
     detailsDescriptionElement.textContent = location.properties.description || 'No description available.';
     showDetailsUI();
-    hideSearchUI();
-    hideDirectionsUI();
-    mapViewInstance.setCenter(location.properties.anchor.coordinates);
-    mapViewInstance.setZoom(17);
+    // Add click handler to hide details and return to search UI
+    detailsCloseButton.removeEventListener('click', showSearchUI);
+    detailsCloseButton.addEventListener('click', showSearchUI);
+    // Select the location on the map
+    mapsIndoorsInstance.selectLocation(location);
+    mapsIndoorsInstance.goTo(location);
+    mapsIndoorsInstance.setFloor(location.properties.floor);
 }
-detailsCloseButton.addEventListener('click', () => {
-    hideDetailsUI();
-});
-directionsCloseButton.addEventListener('click', () => {
-    hideDirectionsUI();
-});
+
+// Initial call to set up the search UI when the page loads
+showSearchUI();
+
+/*
+ * Directions Functionality
+ */
+// Handles origin/destination selection, route calculation, and step navigation
+
+const originInputElement = document.getElementById('origin-input');
+const originResultsElement = document.getElementById('origin-results');
+const destinationInputElement = document.getElementById('destination-input');
+const getDirectionsButton = document.getElementById('get-directions');
+const prevStepButton = document.getElementById('prev-step');
+const nextStepButton = document.getElementById('next-step');
+const stepIndicator = document.getElementById('step-indicator');
+const directionsCloseButton = document.getElementById('directions-close');
+
+
+
+let selectedOrigin = null;
+let selectedDestination = null;
+let currentRoute = null;
+let directionsRenderer = null;
+
+// Reference the details-directions button defined in the HTML
 const detailsDirectionsButton = document.getElementById('details-directions');
+
 detailsDirectionsButton.addEventListener('click', () => {
     showDirectionsPanel(currentDetailsLocation);
 });
+
+detailsCloseButton.addEventListener('click', showSearchUI);
+
+directionsCloseButton.addEventListener('click', () => {
+    hideDirectionsUI();
+    showDetailsUI();
+    if (directionsRenderer) directionsRenderer.setVisible(false);
+});
+
+// Show the directions panel and reset state for a new route
 function showDirectionsPanel(destinationLocation) {
     selectedOrigin = null;
     selectedDestination = destinationLocation;
@@ -359,9 +423,13 @@ function showDirectionsPanel(destinationLocation) {
     destinationInputElement.value = destinationLocation.properties.name;
     originInputElement.value = '';
     originResultsElement.innerHTML = '';
+    hideSearchUI();
+    hideDetailsUI();
     showDirectionsUI();
     stepIndicator.textContent = '';
 }
+
+// Search for origin locations as the user types
 originInputElement.addEventListener('input', onOriginSearch);
 function onOriginSearch() {
     const query = originInputElement.value;
@@ -388,11 +456,15 @@ function onOriginSearch() {
         });
     });
 }
+
+// Calculate and display the route when both origin and destination are selected
 getDirectionsButton.addEventListener('click', async () => {
     if (!selectedOrigin || !selectedDestination) {
+        // Optionally, show an alert or update stepIndicator instead
         stepIndicator.textContent = 'Please select both origin and destination.';
         return;
     }
+    // Use anchor property for LatLngLiteral (anchor is always a point)
     const origin = {
         lat: selectedOrigin.properties.anchor.coordinates[1],
         lng: selectedOrigin.properties.anchor.coordinates[0],
@@ -406,17 +478,23 @@ getDirectionsButton.addEventListener('click', async () => {
     const directionsService = new mapsindoors.services.DirectionsService();
     const route = await directionsService.getRoute({ origin, destination });
     currentRoute = route;
-    if (directionsRenderer) directionsRenderer.setVisible(false);
+    if (directionsRenderer) {
+        directionsRenderer.setVisible(false);
+    }
+
     directionsRenderer = new mapsindoors.directions.DirectionsRenderer({
         mapsIndoors: mapsIndoorsInstance,
         fitBounds: true,
         strokeColor: '#4285f4',
         strokeWeight: 5
     });
+    
     await directionsRenderer.setRoute(route);
     directionsRenderer.setStepIndex(0, 0);
     showCurrentStep();
 });
+
+// Update the step indicator and enable/disable navigation buttons
 function showCurrentStep() {
     if (currentRoute?.legs?.length < 1) return;
     const currentLegIndex = directionsRenderer.getLegIndex();
@@ -431,13 +509,20 @@ function showCurrentStep() {
     prevStepButton.disabled = currentLegIndex === 0 && currentStepIndex === 0;
     nextStepButton.disabled = currentLegIndex === legs.length - 1 && currentStepIndex === steps.length - 1;
 }
+
+// Step navigation event listeners
 prevStepButton.addEventListener('click', () => {
-    if (!directionsRenderer) return;
+    if (!directionsRenderer) {
+        return;
+    }
     directionsRenderer.previousStep();
     showCurrentStep();
+
 });
 nextStepButton.addEventListener('click', () => {
-    if (!directionsRenderer) return;
+    if (!directionsRenderer) {
+        return;
+    }
     directionsRenderer.nextStep();
     showCurrentStep();
 });
@@ -445,15 +530,13 @@ nextStepButton.addEventListener('click', () => {
 
 **Explanation of script.js updates:**
 
-The code added to `script.js` enables your application to provide interactive directions between two locations using the MapsIndoors SDK. Here’s what each part accomplishes:
+* **Directions Panel and UI State Management:** Adds a new directions panel to the UI and updates the state management functions (`showSearchUI`, `showDetailsUI`, `showDirectionsUI`, and their hide counterparts) so only one panel (search, details, or directions) is visible at a time. The details panel now includes a "Get Directions" button that opens the directions panel with the selected location as the destination.
+* **Origin and Destination Selection:** Implements logic for searching and selecting both an origin and a destination. The destination is pre-filled when the user clicks "Get Directions" from a location's details, while the origin can be searched and selected interactively. The origin search uses the same LocationsService as the main search.
+* **Route Calculation:** When both origin and destination are set, clicking "Show Route" uses `mapsindoors.services.DirectionsService.getRoute()` to calculate a route between them. The route object contains all the steps and legs of the journey.
+* **Route Display and Step Navigation:** The route is displayed on the map using `mapsindoors.directions.DirectionsRenderer`. The renderer is initialized with the current MapsIndoors instance and displays the route visually. The user can step through the route using the "Previous" and "Next" buttons, which update the map and the step indicator via the `showCurrentStep()` function. The navigation buttons are enabled/disabled based on the current step.
+* **Event Listeners:** All necessary event listeners are set up for search, details, directions, and navigation actions. This ensures the UI responds to user input and updates the map and panels accordingly.
 
-- **Directions Panel State Management:** Functions like `showDirectionsUI()` and `hideDirectionsUI()` ensure that only one panel (search, details, or directions) is visible at a time, providing a clear and focused user experience.
-- **Origin and Destination Selection:** The code allows users to search for and select both an origin and a destination. The destination is pre-filled when the user clicks "Get Directions" from a location's details, while the origin can be searched and selected interactively.
-- **Route Calculation:** When both locations are set, clicking "Show Route" uses the [DirectionsService](https://app.mapsindoors.com/mapsindoors/js/sdk/latest/docs/mapsindoors.services.DirectionsService.html) to calculate a route between them. The `getRoute()` method returns a route object containing all the steps and legs of the journey. See the [getRoute() documentation](https://app.mapsindoors.com/mapsindoors/js/sdk/latest/docs/mapsindoors.services.DirectionsService.html#getRoute) for details on available options and response structure.
-- **Route Display and Navigation:** The [DirectionsRenderer](https://app.mapsindoors.com/mapsindoors/js/sdk/latest/docs/mapsindoors.directions.DirectionsRenderer.html) is used to visually display the calculated route on the map. The `setRoute()` method loads the route, and `setStepIndex()` allows the user to step through each part of the route. For more, see the [setRoute()](https://app.mapsindoors.com/mapsindoors/js/sdk/latest/docs/mapsindoors.directions.DirectionsRenderer.html#setRoute) and [setStepIndex()](https://app.mapsindoors.com/mapsindoors/js/sdk/latest/docs/mapsindoors.directions.DirectionsRenderer.html#setStepIndex) references.
-- **Step Navigation:** The "Previous" and "Next" buttons let users move through the route instructions, updating the map and the step indicator accordingly. This is managed by the `showCurrentStep()` function, which keeps the UI in sync with the current step of the route.
-
-By combining these elements, the code provides a seamless way for users to get and follow directions within your venue. For a deeper understanding of each SDK method or class, refer to the MapsIndoors [JavaScript SDK Reference Guide](https://app.mapsindoors.com/mapsindoors/js/sdk/latest/docs/).
+These updates allow users to search for a location, view its details, and get step-by-step directions between two locations within your venue, all within a clear and interactive UI.
 
 ## Expected Outcome
 
