@@ -530,11 +530,20 @@ nextStepButton.addEventListener('click', () => {
 
 **Explanation of script.js updates:**
 
-* **Directions Panel and UI State Management:** Adds a new directions panel to the UI and updates the state management functions (`showSearchUI`, `showDetailsUI`, `showDirectionsUI`, and their hide counterparts) so only one panel (search, details, or directions) is visible at a time. The details panel now includes a "Get Directions" button that opens the directions panel with the selected location as the destination.
-* **Origin and Destination Selection:** Implements logic for searching and selecting both an origin and a destination. The destination is pre-filled when the user clicks "Get Directions" from a location's details, while the origin can be searched and selected interactively. The origin search uses the same LocationsService as the main search.
-* **Route Calculation:** When both origin and destination are set, clicking "Show Route" uses `mapsindoors.services.DirectionsService.getRoute()` to calculate a route between them. The route object contains all the steps and legs of the journey.
-* **Route Display and Step Navigation:** The route is displayed on the map using `mapsindoors.directions.DirectionsRenderer`. The renderer is initialized with the current MapsIndoors instance and displays the route visually. The user can step through the route using the "Previous" and "Next" buttons, which update the map and the step indicator via the `showCurrentStep()` function. The navigation buttons are enabled/disabled based on the current step.
-* **Event Listeners:** All necessary event listeners are set up for search, details, directions, and navigation actions. This ensures the UI responds to user input and updates the map and panels accordingly.
+- **Directions Panel and UI State Management:** Adds a new directions panel to the UI and updates the state management functions (`showSearchUI`, `showDetailsUI`, `showDirectionsUI`, and their hide counterparts) so only one panel (search, details, or directions) is visible at a time. The details panel now includes a "Get Directions" button that opens the directions panel with the selected location as the destination.
+- **Directions Panel and Origin/Destination Selection:**
+  - The details panel now includes a "Get Directions" button. Clicking it opens the directions panel with the selected location as the destination.
+  - The directions panel allows the user to search for and select an origin location using the same LocationsService logic as the main search. The destination is pre-filled and disabled.
+  - The `showDirectionsPanel(destinationLocation)` function resets the directions state and prepares the UI for a new route.
+- **Route Calculation:**
+  - When both origin and destination are set, clicking "Show Route" calls `DirectionsService.getRoute()` to calculate a route between them.
+  - The resulting route object contains all legs and steps of the journey.
+- **Route Display and Step Navigation:**
+  - The route is displayed on the map using `DirectionsRenderer`, which is initialized with the current MapsIndoors instance.
+  - The user can step through the route using the "Previous" and "Next" buttons. These update the map and the step indicator via the `showCurrentStep()` function.
+  - The navigation buttons are enabled or disabled based on the current step and leg.
+- **Event Listeners:**
+  - The script sets up all necessary event listeners for search, details, directions, and navigation actions, ensuring the UI responds to user input and updates the map and panels accordingly.
 
 These updates allow users to search for a location, view its details, and get step-by-step directions between two locations within your venue, all within a clear and interactive UI.
 
