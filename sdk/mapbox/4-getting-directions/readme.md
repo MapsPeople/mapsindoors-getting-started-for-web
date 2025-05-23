@@ -530,18 +530,18 @@ nextStepButton.addEventListener('click', () => {
 
 **Explanation of script.js updates:**
 
-- **Directions Panel and UI State Management:** Adds a new directions panel to the UI and updates the state management functions (`showSearchUI`, `showDetailsUI`, `showDirectionsUI`, and their hide counterparts) so only one panel (search, details, or directions) is visible at a time. The details panel now includes a "Get Directions" button that opens the directions panel with the selected location as the destination.
+- **Directions Panel and UI State Management:** Adds a new directions panel to the UI and updates the state management functions (`showSearchUI()`, `showDetailsUI()`, `showDirectionsUI()`, and their hide counterparts) so only one panel (search, details, or directions) is visible at a time. The details panel now includes a "Get Directions" button that opens the directions panel with the selected location as the destination.
 - **Directions Panel and Origin/Destination Selection:**
   - The details panel now includes a "Get Directions" button. Clicking it opens the directions panel with the selected location as the destination.
-  - The directions panel allows the user to search for and select an origin location using the same LocationsService logic as the main search. The destination is pre-filled and disabled.
+  - The directions panel allows the user to search for and select an origin location using the same [`LocationsService.getLocations()`](https://app.mapsindoors.com/mapsindoors/js/sdk/latest/docs/mapsindoors.services.LocationsService.html#.getLocations) logic as the main search. The destination is pre-filled and disabled.
   - The `showDirectionsPanel(destinationLocation)` function resets the directions state and prepares the UI for a new route.
 - **Route Calculation:**
-  - When both origin and destination are set, clicking "Show Route" calls `DirectionsService.getRoute()` to calculate a route between them.
-  - The resulting route object contains all legs and steps of the journey.
+  - When both origin and destination are set, clicking "Show Route" calls [`DirectionsService.getRoute()`](https://app.mapsindoors.com/mapsindoors/js/sdk/latest/docs/mapsindoors.services.DirectionsService.html#getRoute) to calculate a route between them.
+  - The resulting route object contains all legs and steps of the journey. See the [DirectionsService reference](https://app.mapsindoors.com/mapsindoors/js/sdk/latest/docs/mapsindoors.services.DirectionsService.html).
 - **Route Display and Step Navigation:**
-  - The route is displayed on the map using `DirectionsRenderer`, which is initialized with the current MapsIndoors instance.
+  - The route is displayed on the map using [`DirectionsRenderer`](https://app.mapsindoors.com/mapsindoors/js/sdk/latest/docs/mapsindoors.directions.DirectionsRenderer.html), which is initialized with the current MapsIndoors instance.
   - The user can step through the route using the "Previous" and "Next" buttons. These update the map and the step indicator via the `showCurrentStep()` function.
-  - The navigation buttons are enabled or disabled based on the current step and leg.
+  - The navigation buttons are enabled or disabled based on the current step and leg. See [`DirectionsRenderer.setStepIndex()`](https://app.mapsindoors.com/mapsindoors/js/sdk/latest/docs/mapsindoors.directions.DirectionsRenderer.html#setStepIndex).
 - **Event Listeners:**
   - The script sets up all necessary event listeners for search, details, directions, and navigation actions, ensuring the UI responds to user input and updates the map and panels accordingly.
 
