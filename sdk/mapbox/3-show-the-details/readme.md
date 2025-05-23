@@ -82,7 +82,25 @@ Modify your `style.css` file to add styles for the new location details UI eleme
 
 ```css
 /* style.css */
-/* ... (existing styles from Step 2 remain unchanged) ... */
+
+/* Use flexbox for the main layout */
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden; /* Prevent scrollbars if map is full size */
+    display: flex;
+    flex-direction: column; /* Stack children vertically if needed later */
+}
+
+/* Style for the map container */
+#map {
+  /* Make map fill available space */
+  flex-grow: 1;
+  width: 100%; /* Make map fill width */
+  margin: 0;
+  padding: 0;
+}
 
 /* Style for the information panel container */
 .panel {
@@ -100,27 +118,57 @@ Modify your `style.css` file to add styles for the new location details UI eleme
     width: 300px;
 }
 
-/* Class to apply flex display and column direction (already exists) */
+/* Class to apply flex display and column direction */
 .flex-column {
     display: flex;
     flex-direction: column;
     gap: 10px; /* Space between elements */
 }
 
-/* Class to hide elements (already exists) */
+/* Class to hide elements */
 .hidden {
-    display: none !important; /* Use !important to ensure override if needed */
+    display: none;
 }
 
-/* ... (styles for #search-input, #search-results, etc. remain) ... */
+/* Style for the search input field */
+#search-input {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+/* Style for the search results list */
+#search-results {
+    list-style: none; /* Remove default list bullets */
+    padding: 0;
+    margin: 0;
+}
+
+/* Style for individual search result items */
+#search-results li {
+    padding: 8px 0;
+    cursor: pointer; /* Indicate clickable items */
+    border-bottom: 1px solid #eee; /* Separator line */
+}
+
+/* Style for the last search result item (no bottom border) */
+#search-results li:last-child {
+    border-bottom: none;
+}
+
+/* Hover effect for search result items */
+#search-results li:hover {
+    background-color: #f0f0f0; /* Highlight on hover */
+}
 
 /* --- New Styles for Location Details UI elements --- */
 
-/* Styles for the UI wrappers within the panel */
+/* Styles for the new UI wrappers within #search-container */
 #search-ui,
 #details-ui {
-    width: 100%; /* Ensure they fill the panel's width */
-    /* display: flex and flex-direction are handled by .flex-column */
+    width: 100%; /* Ensure they fill the container's width */
+    /* display: flex and flex-direction are controlled by .flex-column-container class via JS */
 }
 
 /* Style for the location name in details */
@@ -130,7 +178,6 @@ Modify your `style.css` file to add styles for the new location details UI eleme
     font-size: 1.2rem;
     border-bottom: 1px solid #eee;
     padding-bottom: 5px;
-    color: #333;
 }
 
 /* Style for the location description in details */
@@ -138,22 +185,17 @@ Modify your `style.css` file to add styles for the new location details UI eleme
     margin-bottom: 15px;
     font-size: 0.9rem;
     color: #555;
-    white-space: pre-wrap; /* Preserve line breaks in description */
-    max-height: 200px; /* Limit description height */
-    overflow-y: auto; /* Scroll for long descriptions */
 }
 
 /* Style for general buttons within details */
 .details-button {
-     padding: 10px 15px;
+     padding: 8px;
      border: none;
      border-radius: 4px;
      font-size: 0.9rem;
      cursor: pointer;
-     margin-bottom: 8px;
-     transition: background-color 0.2s ease-in-out;
-     width: 100%; /* Make buttons full width of their container */
-     box-sizing: border-box; /* Include padding and border in the element's total width and height */
+     margin-bottom: 8px; /* Space between buttons */
+     transition: background-color 0.3s ease;
 }
 
  .details-button:last-child {
@@ -162,11 +204,11 @@ Modify your `style.css` file to add styles for the new location details UI eleme
 
 /* Specific style for the Close button */
 #details-close {
-    background-color: #6c757d; /* Bootstrap secondary-like grey */
-    color: white;
+    background-color: #ccc; /* Grey */
+    color: #333;
 }
  #details-close:hover {
-     background-color: #5a6268;
+     background-color: #bbb;
  }
 ```
 
@@ -208,50 +250,48 @@ const mapsIndoorsInstance = new mapsindoors.MapsIndoors({
 const mapboxInstance = mapViewInstance.getMap();
 
 // Floor Selector (from Step 1)
+// Create a new HTML div element to host the floor selector
 const floorSelectorElement = document.createElement('div');
+// Create a new FloorSelector instance, linking it to the HTML element and the main MapsIndoors instance
 new mapsindoors.FloorSelector(floorSelectorElement, mapsIndoorsInstance);
+// Add the floor selector HTML element to the Mapbox map using Mapbox's addControl method
 mapboxInstance.addControl({
     onAdd: function () { return floorSelectorElement; },
     onRemove: function () { floorSelectorElement.parentNode.removeChild(floorSelectorElement); },
 }, 'top-right');
 
 /*
- * UI Element References
+ * Search Functionality (Modified for dynamic content)
  */
+
+// Get references to the search input and results list elements
 const searchInputElement = document.getElementById('search-input');
 const searchResultsElement = document.getElementById('search-results');
-const detailsNameElement = document.getElementById('details-name');
-const detailsDescriptionElement = document.getElementById('details-description');
-const detailsCloseButton = document.getElementById('details-close');
+const searchContainerElement = document.getElementById('search-container'); // Get the main container
 
-let currentDetailsLocation = null;
-
-/*
- * Event Listeners
- */
+// Add an event listener to the search input for 'input' events
 searchInputElement.addEventListener('input', onSearch);
-// The close button listener is added dynamically in showDetailsInSearchContainer
 
-/*
- * Search Functionality
- */
+// Function to perform the search and update the results list and map highlighting
 function onSearch() {
     const query = searchInputElement.value;
     const currentVenue = mapsIndoorsInstance.getVenue();
 
+    // Clear previous search results and hide the list
     searchResultsElement.innerHTML = null;
-    searchResultsElement.classList.add('hidden'); // Hide results list initially or when query is short
-    mapsIndoorsInstance.highlight(); // Clear previous general highlights from search
-    mapsIndoorsInstance.selectLocation(); // Deselect any specifically selected location
-    
-    showSearchUI(); // Ensure search UI is visible and details UI is hidden when typing a new search
+    searchResultsElement.classList.add('hidden'); // Hide results list when typing
+    // Clear map highlighting and deselect location
+    mapsIndoorsInstance.highlight();
+    mapsIndoorsInstance.selectLocation();
+    // Ensure search UI is visible and details UI is hidden
+    showSearchUI();
+
 
     if (query.length < 3) {
-        return;
+        return; // Stop here
     }
 
-    // Prepare search parameters. Note: using currentVenue.name here.
-    const searchParameters = { q: query, venue: currentVenue ? currentVenue.name : undefined }; 
+    const searchParameters = { q: query, venue: currentVenue ? currentVenue.name : undefined };
 
     mapsindoors.services.LocationsService.getLocations(searchParameters).then(locations => {
         if (locations.length === 0) {
@@ -264,21 +304,17 @@ function onSearch() {
 
         locations.forEach(location => {
             const listElement = document.createElement('li');
-            listElement.textContent = location.properties.name;
-            // Add click event listener to show details for this location
+            listElement.textContent = location.properties.name; // Display location name
+
+            // Add click event listener to show details in the same container
             listElement.addEventListener('click', () => showDetailsInSearchContainer(location));
+
             searchResultsElement.appendChild(listElement);
         });
 
         searchResultsElement.classList.remove('hidden'); // Show results list
-        // Note: Unlike Step 2, this step does not re-highlight all search results on the map here.
-        // Highlighting is handled when a specific location is selected in showDetailsInSearchContainer.
     });
 }
-
-/*
- * UI State Management Functions
- */
 
 // --- UI State Management Functions ---
 const searchUIElement = document.getElementById('search-ui');
@@ -286,15 +322,14 @@ const detailsUIElement = document.getElementById('details-ui');
 const directionsUIElement = document.getElementById('directions-ui');
 
 function showSearchUI() {
-    hideDetailsUI();
+    hideDetailsUI(); // Ensure details UI is hidden
     searchUIElement.classList.add('flex-column');
     searchUIElement.classList.remove('hidden');
     searchInputElement.focus();
-    currentDetailsLocation = null;
 }
 
 function showDetailsUI() {
-    hideSearchUI();
+    hideSearchUI(); // Ensure search UI is hidden
     detailsUIElement.classList.add('flex-column');
     detailsUIElement.classList.remove('hidden');
 }
@@ -309,6 +344,20 @@ function hideDetailsUI() {
     detailsUIElement.classList.add('hidden');
 }
 
+
+/*
+ * Location Details Functionality (Implemented within the search container)
+ */
+
+// Get references to the static details view elements
+const detailsNameElement = document.getElementById('details-name');
+const detailsDescriptionElement = document.getElementById('details-description');
+const detailsCloseButton = document.getElementById('details-close');
+
+// Variable to store the location currently shown in details
+let currentDetailsLocation = null;
+
+// Function to show the details view for a given location within the search container
 function showDetailsInSearchContainer(location) {
     currentDetailsLocation = location;
     detailsNameElement.textContent = location.properties.name;
@@ -324,7 +373,7 @@ function showDetailsInSearchContainer(location) {
     mapsIndoorsInstance.setFloor(location.properties.floor);
 }
 
-// Initial setup: Ensure the search UI is visible when the page loads
+// Initial call to set up the search UI when the page loads
 showSearchUI();
 ```
 
