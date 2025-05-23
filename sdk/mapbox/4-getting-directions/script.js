@@ -45,7 +45,6 @@ mapboxInstance.addControl({
     onRemove: function () { /* Clean up if needed */ },
 }, 'top-right'); // Optional: Specify a position
 
-
 /*
  * Search Functionality (Modified for dynamic content)
  */
