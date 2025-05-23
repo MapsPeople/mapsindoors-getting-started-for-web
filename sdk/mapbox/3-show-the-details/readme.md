@@ -330,7 +330,6 @@ showSearchUI();
 
 **Explanation of script.js updates:**
 
-* **API Keys & Venue ID**: Remember to replace the placeholders `YOUR_MAPBOX_ACCESS_TOKEN`, `YOUR_MAPSINDOORS_API_KEY`, and `YOUR_MAPSINDOORS_VENUE_ID` with your actual credentials when implementing this guide.
 * **UI Element References**: The script references the search UI (`#search-ui`), details UI (`#details-ui`), and their child elements for displaying the location name (`#details-name`), description (`#details-description`), and the close button (`#details-close`).
 * **Event Listeners**:
   * An `input` event listener on `searchInputElement` triggers the `onSearch` function whenever the user types.
