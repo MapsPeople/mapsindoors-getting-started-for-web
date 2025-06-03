@@ -35,8 +35,8 @@ Open your `index.html` file. We will add a new `div` within the existing `.panel
     <title>MapsIndoors</title>
     <link rel="stylesheet" href="style.css">
     <link href='https://api.mapbox.com/mapbox-gl-js/v3.10.0/mapbox-gl.css' rel='stylesheet' />
-    <script src="https://app.mapsindoors.com/mapsindoors/js/sdk/4.40.2/mapsindoors-4.40.2.js.gz"
-            integrity="sha384-tFHttWqE6qOoX8etJurRBBXpH6puWNTgC8Ilq477ltu4EcpHk9ZwFPJDIli9wAS7"
+    <script src="https://app.mapsindoors.com/mapsindoors/js/sdk/4.41.0/mapsindoors-4.41.0.js.gz"
+            integrity="sha384-3lk3cwVPj5MpUyo5T605mB0PMHLLisIhNrSREQsQHjD9EXkHBjz9ETgopmTbfMDc"
             crossorigin="anonymous"></script>
     <script src='https://api.mapbox.com/mapbox-gl-js/v3.10.0/mapbox-gl.js'></script>
 </head>

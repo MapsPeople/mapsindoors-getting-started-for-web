@@ -36,8 +36,8 @@ Open your `index.html` file. You need to include the Mapbox GL JS CSS and JavaSc
     <!-- Mapbox GL JS CSS -->
     <link href='https://api.mapbox.com/mapbox-gl-js/v3.10.0/mapbox-gl.css' rel='stylesheet' />
     <!-- MapsIndoors SDK (already included from initial setup) -->
-    <script src="https://app.mapsindoors.com/mapsindoors/js/sdk/4.40.2/mapsindoors-4.40.2.js.gz"
-            integrity="sha384-tFHttWqE6qOoX8etJurRBBXpH6puWNTgC8Ilq477ltu4EcpHk9ZwFPJDIli9wAS7"
+    <script src="https://app.mapsindoors.com/mapsindoors/js/sdk/4.41.0/mapsindoors-4.41.0.js.gz"
+            integrity="sha384-3lk3cwVPj5MpUyo5T605mB0PMHLLisIhNrSREQsQHjD9EXkHBjz9ETgopmTbfMDc"
             crossorigin="anonymous"></script>
     <!-- Mapbox GL JS -->
     <script src='https://api.mapbox.com/mapbox-gl-js/v3.10.0/mapbox-gl.js'></script>
@@ -58,7 +58,7 @@ Open your `index.html` file. You need to include the Mapbox GL JS CSS and JavaSc
 * The `<title>` is updated for clarity.
 * The `<link href='https://api.mapbox.com/mapbox-gl-js/v3.10.0/mapbox-gl.css' rel='stylesheet' />` tag in the `<head>` includes the necessary CSS for Mapbox GL JS. This styles the map elements provided by Mapbox.
 * The `<script src='https://api.mapbox.com/mapbox-gl-js/v3.10.0/mapbox-gl.js'></script>` tag in the `<head>` includes the Mapbox GL JS library. **Note**: We are using version `3.10.0` in this example; you should verify this is the currently recommended version or check the [Mapbox documentation](https://docs.mapbox.com/mapbox-gl-js/guides/) for the latest.
-* The MapsIndoors SDK script (`mapsindoors-4.40.2.js.gz`) should already be present from the initial setup guide. You can always check the [MapsIndoors SDK reference documentation](https://app.mapsindoors.com/mapsindoors/js/sdk/latest/index.html) for the latest SDK version.
+* The MapsIndoors SDK script (`mapsindoors-4.41.0.js.gz`) should already be present from the initial setup guide. You can always check the [MapsIndoors SDK reference documentation](https://app.mapsindoors.com/mapsindoors/js/sdk/latest/index.html) for the latest SDK version.
 * An empty `<div>` with the attribute `id="map"` was added inside the `<body>`. This `div` is crucial as it serves as the container where both the Mapbox base map and the MapsIndoors layers will be rendered.
 
 ### Update style.css
