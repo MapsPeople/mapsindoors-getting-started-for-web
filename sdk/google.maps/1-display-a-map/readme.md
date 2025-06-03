@@ -29,14 +29,15 @@ Open your `index.html` file. You need to include the Google Maps JavaScript API 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MapsIndoors with Google Maps</title>
+    <title>MapsIndoors</title>
     <link rel="stylesheet" href="style.css">
+    <!-- Google Maps JavaScript API -->
+    <script src="https://maps.googleapis.com/maps/api/js?libraries=geometry&key=YOUR_GOOGLE_MAPS_API_KEY"></script>
     <!-- MapsIndoors SDK (already included from initial setup) -->
     <script src="https://app.mapsindoors.com/mapsindoors/js/sdk/4.41.0/mapsindoors-4.41.0.js.gz"
             integrity="sha384-3lk3cwVPj5MpUyo5T605mB0PMHLLisIhNrSREQsQHjD9EXkHBjz9ETgopmTbfMDc"
             crossorigin="anonymous"></script>
-    <!-- Google Maps JavaScript API -->
-    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY"></script>
+
 </head>
 <body>
     <!-- This div will hold your map -->
@@ -48,9 +49,8 @@ Open your `index.html` file. You need to include the Google Maps JavaScript API 
 
 **Explanation of index.html updates:**
 
-* The `<title>` is updated for clarity.
-* The MapsIndoors SDK script (`mapsindoors-4.41.0.js.gz`) should already be present from the initial setup guide. You can always check the [MapsIndoors SDK reference documentation](https://app.mapsindoors.com/mapsindoors/js/sdk/latest/index.html) for the latest SDK version.
 * The Google Maps JavaScript API is included with your API key. Replace `YOUR_GOOGLE_MAPS_API_KEY` with your actual key.
+* The MapsIndoors SDK script (`mapsindoors-4.41.0.js.gz`) should already be present from the initial setup guide. You can always check the [MapsIndoors SDK reference documentation](https://app.mapsindoors.com/mapsindoors/js/sdk/latest/index.html) for the latest SDK version.
 * An empty `<div>` with the attribute `id="map"` was added inside the `<body>`. This `div` is crucial as it serves as the container where both the Google base map and the MapsIndoors layers will be rendered.
 
 ### Update style.css
