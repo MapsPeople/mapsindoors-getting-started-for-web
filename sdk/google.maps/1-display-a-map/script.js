@@ -7,7 +7,7 @@ const mapViewOptions = {
 };
 
 // Set the MapsIndoors API key
-mapsindoors.MapsIndoors.setMapsIndoorsApiKey('YOUR_MAPSINDOORS_API_KEY');
+mapsindoors.MapsIndoors.setMapsIndoorsApiKey('02c329e6777d431a88480a09');
 
 // Create a new instance of the MapsIndoors Google Maps view
 const mapViewInstance = new mapsindoors.mapView.GoogleMapsView(mapViewOptions);
@@ -15,7 +15,7 @@ const mapViewInstance = new mapsindoors.mapView.GoogleMapsView(mapViewOptions);
 // Create a new MapsIndoors instance, linking it to the map view
 const mapsIndoorsInstance = new mapsindoors.MapsIndoors({
     mapView: mapViewInstance,
-    venue: 'YOUR_MAPSINDOORS_VENUE_ID', // Replace with your actual venue ID
+    venue: 'dfea941bb3694e728df92d3d', // Replace with your actual venue ID
 });
 
 // Add MapsIndoors controls to the Google map (e.g., Floor Selector)
