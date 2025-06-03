@@ -101,7 +101,7 @@ const mapViewOptions = {
 };
 
 // Set the MapsIndoors API key
-mapsindoors.MapsIndoors.setMapsIndoorsApiKey('02c329e6777d431a88480a09');
+mapsindoors.MapsIndoors.setMapsIndoorsApiKey('YOUR_MAPSINDOORS_API_KEY');
 
 // Create a new instance of the MapsIndoors Google Maps view
 const mapViewInstance = new mapsindoors.mapView.GoogleMapsView(mapViewOptions);
@@ -109,7 +109,7 @@ const mapViewInstance = new mapsindoors.mapView.GoogleMapsView(mapViewOptions);
 // Create a new MapsIndoors instance, linking it to the map view
 const mapsIndoorsInstance = new mapsindoors.MapsIndoors({
     mapView: mapViewInstance,
-    venue: 'dfea941bb3694e728df92d3d', // Replace with your actual venue ID
+    venue: 'YOUR_MAPSINDOORS_VENUE_ID', // Replace with your actual venue ID
 });
 
 // Add MapsIndoors controls to the Google map (e.g., Floor Selector)
@@ -125,9 +125,9 @@ googleMapInstance.controls[google.maps.ControlPosition.TOP_RIGHT].push(floorSele
   * `element`: The HTML DOM element (our `<div id="map">`) where the map will be rendered.
   * `center`, `zoom`, `maxZoom`: Standard map parameters to set the initial view.
   * For more details on all available options, see the [`mapsindoors.mapView.GoogleMapsView` class documentation](https://app.mapsindoors.com/mapsindoors/js/sdk/latest/docs/mapsindoors.mapView.GoogleMapsView.html).
-* `mapsindoors.MapsIndoors.setMapsIndoorsApiKey('02c329e6777d431a88480a09');`: This static method sets your MapsIndoors API key globally for the SDK. This key authenticates your requests to MapsIndoors services. See the [`mapsindoors.MapsIndoors` class reference](https://app.mapsindoors.com/mapsindoors/js/sdk/latest/docs/MapsIndoors.html).
+* `mapsindoors.MapsIndoors.setMapsIndoorsApiKey('YOUR_MAPSINDOORS_API_KEY');`: This static method sets your MapsIndoors API key globally for the SDK. This key authenticates your requests to MapsIndoors services. See the [`mapsindoors.MapsIndoors` class reference](https://app.mapsindoors.com/mapsindoors/js/sdk/latest/docs/MapsIndoors.html).
 * `const mapViewInstance = new mapsindoors.mapView.GoogleMapsView(mapViewOptions);`: This line creates an instance of `GoogleMapsView`, which is responsible for integrating MapsIndoors data and rendering with a Google Map. For more details on `GoogleMapsView`, see its [class reference](https://app.mapsindoors.com/mapsindoors/js/sdk/latest/docs/mapsindoors.mapView.GoogleMapsView.html).
-* `const mapsIndoorsInstance = new mapsindoors.MapsIndoors({ mapView: mapViewInstance, venue: 'dfea941bb3694e728df92d3d' });`: This creates the main `MapsIndoors` instance. This object is your primary interface for interacting with MapsIndoors functionalities like displaying locations, getting directions, etc. See the [`mapsindoors.MapsIndoors` class documentation](https://app.mapsindoors.com/mapsindoors/js/sdk/latest/docs/MapsIndoors.html).
+* `const mapsIndoorsInstance = new mapsindoors.MapsIndoors({ mapView: mapViewInstance, venue: 'YOUR_MAPSINDOORS_VENUE_ID' });`: This creates the main `MapsIndoors` instance. This object is your primary interface for interacting with MapsIndoors functionalities like displaying locations, getting directions, etc. See the [`mapsindoors.MapsIndoors` class documentation](https://app.mapsindoors.com/mapsindoors/js/sdk/latest/docs/MapsIndoors.html).
 * **Floor Selector Integration:**
   * `const floorSelectorElement = document.createElement('div');`: A new HTML `div` element is dynamically created. This element will serve as the container for the Floor Selector UI.
   * `new mapsindoors.FloorSelector(floorSelectorElement, mapsIndoorsInstance);`: This instantiates the `FloorSelector` control. It takes the HTML element to render into and the `mapsIndoorsInstance` to interact with (e.g., to know available floors and change the current floor). For more details on `FloorSelector`, see its [class reference](https://app.mapsindoors.com/mapsindoors/js/sdk/latest/docs/mapsindoors.FloorSelector.html).
