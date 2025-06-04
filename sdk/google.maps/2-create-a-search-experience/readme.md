@@ -24,11 +24,13 @@ This guide details the modifications to HTML, CSS, and JavaScript needed to add 
 
 ### Update index.html
 
-Open your `index.html` file. Add a dedicated search panel containing an input field for queries and an unordered list for search results.
+Open your `index.html` file. The primary structural change to your HTML is the introduction of a dedicated search panel. This panel will house the input field where users type their search queries and an unordered list where the corresponding search results will appear.
 
 ```html
+<!-- index.html -->
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -39,119 +41,139 @@ Open your `index.html` file. Add a dedicated search panel containing an input fi
             integrity="sha384-3lk3cwVPj5MpUyo5T605mB0PMHLLisIhNrSREQsQHjD9EXkHBjz9ETgopmTbfMDc"
             crossorigin="anonymous"></script>
 </head>
+
 <body>
     <div id="map"></div>
+
+    <!-- New search panel for user interaction -->
     <div class="panel">
         <div id="search-ui" class="flex-column">
+            <!-- Input field for users to type search queries -->
             <input type="text" id="search-input" placeholder="Search for a location...">
+            <!-- Unordered list to display search results dynamically -->
             <ul id="search-results"></ul>
         </div>
     </div>
+
     <script src="script.js"></script>
 </body>
+
 </html>
 ```
 
 **Explanation of index.html updates:**
 
-* A new `div` with the class `panel` is added to contain the search UI.
-* Inside, a `div` with id `search-ui` and class `flex-column` arranges the input and results vertically.
-* The `<input>` with `id="search-input"` is for user queries.
-* The `<ul>` with `id="search-results"` will display results dynamically.
+* A new `div` element with the class `panel` is added. This `div` serves as the main container for all search-related UI elements.
+* Inside the `panel`, another `div` with the id `search-ui` and the class `flex-column` is introduced to arrange the search input and results list vertically.
+* An `<input>` element with `id="search-input"` is the text field for user search queries.
+* An `<ul>` (unordered list) element with `id="search-results"` will be dynamically populated with locations matching the user's query.
 
-### Update style.css
+## Update style.css
 
-Add styles for the search panel and its contents to ensure a user-friendly and visually appealing interface.
+Modify your `style.css` file to incorporate styles for the newly added search panel and its contents. These styles are crucial for ensuring the search interface is user-friendly, visually appealing, and correctly positioned over the map without obstructing it entirely.
 
 ```css
+/* style.css */
+
+/* Use flexbox for the main layout */
 html, body {
     height: 100%;
     margin: 0;
     padding: 0;
-    overflow: hidden;
+    overflow: hidden; /* Prevent scrollbars if map is full size */
     display: flex;
-    flex-direction: column;
+    flex-direction: column; /* Stack children vertically if needed later */
 }
 
+/* Style for the map container */
 #map {
-    flex-grow: 1;
-    width: 100%;
-    margin: 0;
-    padding: 0;
+  /* Make map fill available space */
+  flex-grow: 1;
+  width: 100%; /* Make map fill width */
+  margin: 0;
+  padding: 0;
 }
 
+
+/* Style for the information panel container */
 .panel {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    z-index: 10;
-    background-color: white;
-    padding: 10px;
-    border-radius: 5px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    max-height: 80%;
-    overflow-y: auto;
-    border: 1px solid #ccc;
-    width: 300px;
+    position: absolute; /* Positions the panel relative to the nearest positioned ancestor (or body if none). This allows it to float over the map. */
+    top: 10px; /* Adds a 10px margin from the top edge of its containing element. */
+    left: 10px; /* Adds a 10px margin from the left edge of its containing element, placing it in the top-left corner. */
+    z-index: 10; /* Ensures the panel appears on top of other elements, like the map itself, which might have lower z-index values. */
+    background-color: white; /* Sets a solid white background for the panel, making text readable. */
+    padding: 10px; /* Adds 10px of space inside the panel, around its content. */
+    border-radius: 5px; /* Rounds the corners of the panel for a softer look. */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* Adds a subtle shadow effect, giving the panel a sense of depth. */
+    max-height: 80%; /* Limits max-height to prevent overflow with details */
+    overflow-y: auto; /* Adds a vertical scrollbar if the content inside the panel exceeds its max-height. */
+    border: 1px solid #ccc; /* Adds a light gray border around the panel for better visual separation. */
+    width: 300px; /* Sets a fixed width for the panel. */
 }
 
+/* Class to apply flex display and column direction */
 .flex-column {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+    display: flex; /* Enables flexbox layout for this element. */
+    flex-direction: column; /* Arranges child elements in a vertical column. */
+    gap: 10px; /* Adds a 10px gap between child elements within the flex container. */
 }
 
+/* Class to hide elements */
 .hidden {
-    display: none;
+    display: none; /* Makes elements with this class invisible and removes them from the layout. */
 }
 
+/* Style for the search input field */
 #search-input {
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 1rem;
+    padding: 8px; /* Adds 8px of internal padding to the input field for better text spacing. */
+    border: 1px solid #ccc; /* Adds a light gray border around the input field. */
+    border-radius: 4px; /* Slightly rounds the corners of the input field. */
+    font-size: 1rem; /* Sets the font size within the input field to a standard readable size. */
 }
 
+/* Style for the search results list */
 #search-results {
-    list-style: none;
-    padding: 0;
-    margin: 0;
+    list-style: none; /* Removes the default bullet points from the unordered list. */
+    padding: 0; /* Removes default padding from the list. */
+    margin: 0; /* Removes default margins from the list. */
 }
 
+/* Style for individual search result items */
 #search-results li {
-    padding: 8px 0;
-    cursor: pointer;
-    border-bottom: 1px solid #eee;
+    padding: 8px 0; /* Adds vertical padding to each list item for spacing. */
+    cursor: pointer; /* Changes the mouse cursor to a pointer on hover, indicating the item is clickable. */
+    border-bottom: 1px solid #eee; /* Adds a light gray line below each list item, acting as a separator. */
 }
 
+/* Style for the last search result item (no bottom border) */
 #search-results li:last-child {
-    border-bottom: none;
+    border-bottom: none; /* Removes the bottom border from the last item in the list for a cleaner look. */
 }
 
+/* Hover effect for search result items */
 #search-results li:hover {
-    background-color: #f0f0f0;
+    background-color: #f0f0f0; /* Changes the background color of a list item when hovered, providing visual feedback. */
 }
 ```
 
 **Explanation of style.css updates:**
 
-* `.panel`: Styles the search panel to float over the map in the top-left corner, with a white background, padding, rounded corners, and a shadow.
-* `.flex-column`: Stacks child elements vertically with a gap.
-* `.hidden`: Utility class to hide elements.
-* `#search-input`: Styles the search input field.
-* `#search-results`: Styles the results list.
-* `#search-results li`: Styles individual result items, including hover effects.
+* **`.panel`**: Styles the search panel to float over the map in the top-left corner, with a white background, padding, rounded corners, and a shadow for a modern look. `max-height` and `overflow-y: auto` ensure it's scrollable if results are numerous.
+* **`.flex-column`**: A utility class using Flexbox to stack child elements (search input, results list) vertically with a small gap.
+* **`.hidden`**: A utility class to hide elements (`display: none;`), used initially for the search results list.
+* **`#search-input`**: Styles the search input field with padding, border, and font size for readability.
+* **`#search-results`**: Styles the unordered list for search results, removing default list styling.
+* **`#search-results li`**: Styles individual list items with padding, a bottom border for separation, and a pointer cursor to indicate clickability.
+* **`#search-results li:last-child`**: Removes the bottom border from the last list item.
+* **`#search-results li:hover`**: Provides a hover effect for list items for better user feedback.
 
-### Add JavaScript to script.js
+## Update script.js
 
-Open your `script.js` file and add the following JavaScript code. This code will initialize the Google Map, then create the MapsIndoors view and instance, and finally add a Floor Selector and search functionality.
-
-**Note:**
-
-* Replace the demo MapsIndoors API key and venue ID in `script.js` with your own values if you have them.
-* For quick testing, you can use the demo MapsIndoors API key `02c329e6777d431a88480a09` and the Austin office venue ID `dfea941bb3694e728df92d3d` as shown below.
+The `script.js` file sees the most significant changes as it houses the logic for the search functionality.
 
 ```javascript
+// script.js
+
 // Define options for the MapsIndoors Google Maps view
 const mapViewOptions = {
     element: document.getElementById('map'),
@@ -161,7 +183,7 @@ const mapViewOptions = {
 };
 
 // Set the MapsIndoors API key
-mapsindoors.MapsIndoors.setMapsIndoorsApiKey('YOUR_MAPSINDOORS_API_KEY');
+mapsindoors.MapsIndoors.setMapsIndoorsApiKey('02c329e6777d431a88480a09');
 
 // Create a new instance of the MapsIndoors Google Maps view
 const mapViewInstance = new mapsindoors.mapView.GoogleMapsView(mapViewOptions);
@@ -169,48 +191,64 @@ const mapViewInstance = new mapsindoors.mapView.GoogleMapsView(mapViewOptions);
 // Create a new MapsIndoors instance, linking it to the map view
 const mapsIndoorsInstance = new mapsindoors.MapsIndoors({
     mapView: mapViewInstance,
-    venue: 'YOUR_MAPSINDOORS_VENUE_ID', // Replace with your actual venue ID
+    // Set the venue ID to load the map for a specific venue
+    venue: 'dfea941bb3694e728df92d3d', // Replace with your actual venue ID
 });
 
-// Add MapsIndoors controls to the Google map (e.g., Floor Selector)
+// Create a new HTML div element to host the floor selector
 const floorSelectorElement = document.createElement('div');
+
+// Create a new FloorSelector instance, linking it to the HTML element and the main MapsIndoors instance.
 new mapsindoors.FloorSelector(floorSelectorElement, mapsIndoorsInstance);
+
+// Get the underlying Google Maps instance
 const googleMapInstance = mapViewInstance.getMap();
+
+// Add the floor selector HTML element to the Google Maps controls.
 googleMapInstance.controls[google.maps.ControlPosition.TOP_RIGHT].push(floorSelectorElement);
 
-// --- Search Functionality ---
+/*
+ * Search Functionality
+ */
 
+// Get references to the search input and results list elements
 const searchInputElement = document.getElementById('search-input');
 const searchResultsElement = document.getElementById('search-results');
+
+// Initially hide the search results list
 searchResultsElement.classList.add('hidden');
 
+// Add an event listener to the search input field.
+// The 'input' event triggers the onSearch function every time the user types or modifies the text in the input field.
 searchInputElement.addEventListener('input', onSearch);
 
+// Function to perform the search and update the results list and map highlighting
 function onSearch() {
     const query = searchInputElement.value;
     const currentVenue = mapsIndoorsInstance.getVenue();
-
-    searchResultsElement.innerHTML = null;
-    mapsIndoorsInstance.highlight();
-    mapsIndoorsInstance.selectLocation();
+    
+    searchResultsElement.innerHTML = null; // Clears previous search results.
+    mapsIndoorsInstance.highlight(); // Clears previous highlights from the map.
+    mapsIndoorsInstance.selectLocation(); // Deselects any location that might have been selected.
 
     if (query.length < 3) {
-        searchResultsElement.classList.add('hidden');
+        searchResultsElement.classList.add('hidden'); // Hide list if query is too short
         return;
     }
 
+    // Prepare search parameters. Note: using currentVenue.name here.
     const searchParameters = {
         q: query,
         venue: currentVenue ? currentVenue.name : undefined
     };
 
     mapsindoors.services.LocationsService.getLocations(searchParameters)
-        .then(locations => {
+        .then(locations => { // locations is an array of mapsindoors.Location objects.
             if (locations.length === 0) {
                 const noResultsItem = document.createElement('li');
                 noResultsItem.textContent = 'No results found';
                 searchResultsElement.appendChild(noResultsItem);
-                searchResultsElement.classList.remove('hidden');
+                searchResultsElement.classList.remove('hidden'); // Show list to display "No results"
                 return;
             }
 
@@ -218,21 +256,21 @@ function onSearch() {
 
             locations.forEach(location => {
                 const listElement = document.createElement('li');
-                listElement.innerHTML = location.properties.name;
-                listElement.dataset.locationId = location.id;
+                listElement.innerHTML = location.properties.name; // Display location name.
+                listElement.dataset.locationId = location.id; // Store ID for potential use
 
                 listElement.addEventListener('click', function () {
-                    mapsIndoorsInstance.goTo(location);
-                    mapsIndoorsInstance.setFloor(location.properties.floor);
-                    mapsIndoorsInstance.selectLocation(location);
+                    mapsIndoorsInstance.goTo(location); // Pan and zoom to the location
+                    mapsIndoorsInstance.setFloor(location.properties.floor); // Change to the location's floor
+                    mapsIndoorsInstance.selectLocation(location); // Select and highlight this specific location
                 });
 
                 searchResultsElement.appendChild(listElement);
-                locationIdsToHighlight.push(location.id);
+                locationIdsToHighlight.push(location.id); // Collect ID for batch highlighting
             });
 
-            searchResultsElement.classList.remove('hidden');
-            mapsIndoorsInstance.highlight(locationIdsToHighlight);
+            searchResultsElement.classList.remove('hidden'); // Make results list visible
+            mapsIndoorsInstance.highlight(locationIdsToHighlight); // Highlight all found locations on the map.
         })
         .catch(error => {
             console.error("Error fetching locations:", error);
@@ -246,17 +284,32 @@ function onSearch() {
 
 **Explanation of script.js updates:**
 
-* `searchInputElement` and `searchResultsElement` reference the search input and results list.
-* The results list is hidden by default.
-* An `input` event listener on the search field triggers the `onSearch` function.
-* `onSearch()`:
-  * Gets the query and current venue.
-  * Clears previous results and highlights.
-  * Hides the results if the query is too short.
-  * Calls `mapsindoors.services.LocationsService.getLocations()` to fetch matching locations.
-  * Populates the results list and highlights locations on the map.
-  * Clicking a result pans/zooms to the location, sets the floor, and selects the location.
-* For more details, see the [LocationsService.getLocations() documentation](https://app.mapsindoors.com/mapsindoors/js/sdk/latest/docs/mapsindoors.services.LocationsService.html#.getLocations) and [MapsIndoors API reference](https://app.mapsindoors.com/mapsindoors/js/sdk/latest/docs/MapsIndoors.html).
+* **DOM Element References**: `searchInputElement` and `searchResultsElement` get references to the HTML input field and the unordered list for displaying results, respectively.
+* **Initial State**: The `searchResultsElement` is hidden by default using the `.hidden` CSS class.
+* **Event Listener**: An `input` event listener is attached to `searchInputElement`. This calls the `onSearch` function each time the user types into the search field.
+* **`onSearch()` Function**: This is the core of the search logic:
+  * It retrieves the current `query` from the input field and gets the `currentVenue` using `mapsIndoorsInstance.getVenue()`. For more details on venue information, see the [`getVenue()` reference](https://app.mapsindoors.com/mapsindoors/js/sdk/latest/docs/MapsIndoors.html#getVenue).
+  * It clears previous search results by setting `searchResultsElement.innerHTML = null`.
+  * It clears any existing highlights from the map using `mapsIndoorsInstance.highlight()` (called without arguments). See its [API documentation](https://app.mapsindoors.com/mapsindoors/js/sdk/latest/docs/MapsIndoors.html#highlight) for more on clearing highlights.
+  * It deselects any currently selected location using `mapsIndoorsInstance.selectLocation()` (called without arguments). Refer to its [API documentation](https://app.mapsindoors.com/mapsindoors/js/sdk/latest/docs/MapsIndoors.html#selectLocation) for deselection behavior.
+  * If the `query` length is less than 3 characters, it hides the `searchResultsElement` and exits to prevent overly broad or empty searches.
+  * It prepares `searchParameters` with the `q` (query) and scopes the search to the `currentVenue.name`. For a comprehensive list of search options, check out the [LocationsService.getLocations() documentation](https://app.mapsindoors.com/mapsindoors/js/sdk/latest/docs/mapsindoors.services.LocationsService.html#.getLocations)
+  * It calls `mapsindoors.services.LocationsService.getLocations(searchParameters)` to fetch locations. This asynchronous method returns a Promise.
+  * **`.then(locations => { ... })`**: This block handles the successful response from the LocationsService. `locations` is an array of objects, where each object conforms to the [Location interface](https://app.mapsindoors.com/mapsindoors/js/sdk/latest/docs/mapsindoors.Location.html).
+    * If no `locations` are found, it displays a "No results found" message in the list.
+    * Otherwise, it iterates through each `location` object:
+      * Creates an `<li>` element.
+      * Sets its `innerHTML` to `location.properties.name`. The `properties` object on an object conforming to the `Location` interface contains various details about the location. For more information, see the [Location documentation](https://app.mapsindoors.com/mapsindoors/js/sdk/latest/docs/mapsindoors.Location.html).
+      * Stores `location.id` in `listElement.dataset.locationId` for potential future use.
+      * Adds a `click` event listener to the list item. When clicked:
+        * `mapsIndoorsInstance.goTo(location)`: Pans and zooms the map to the clicked location. For more details on `goTo()`, see its [reference](https://app.mapsindoors.com/mapsindoors/js/sdk/latest/docs/MapsIndoors.html#goTo).
+        * `mapsIndoorsInstance.setFloor(location.properties.floor)`: Changes the map to the location's floor. To understand floor management, check the [`setFloor()` documentation](https://app.mapsindoors.com/mapsindoors/js/sdk/latest/docs/MapsIndoors.html#setFloor).
+        * `mapsIndoorsInstance.selectLocation(location)`: Selects and highlights this specific location on the map. For further information, refer to the [`selectLocation()` API documentation](https://app.mapsindoors.com/mapsindoors/js/sdk/latest/docs/MapsIndoors.html#selectLocation).
+      * Appends the new list item to `searchResultsElement`.
+      * Collects all `location.id`s into `locationIdsToHighlight`.
+    * Makes the `searchResultsElement` visible by removing the `.hidden` class.
+    * Calls `mapsIndoorsInstance.highlight(locationIdsToHighlight)` to highlight all found locations on the map simultaneously. The `highlight()` method accepts an array of location IDs. See its [API documentation](https://app.mapsindoors.com/mapsindoors/js/sdk/latest/docs/MapsIndoors.html#highlight) for details on batch highlighting.
+  * **`.catch(error => { ... })`**: Handles potential errors during the search request, logging them to the console and displaying an error message in the list.
 
 ## Expected Outcome
 
@@ -275,8 +328,8 @@ After implementing these changes:
 
 * **Search not working / No results:**
   * Check the browser's developer console (F12) for errors.
-  * Ensure your MapsIndoors API Key (`02c329e6777d431a88480a09` for demo) is correct and the MapsIndoors SDK is loaded.
-  * Verify your Google Maps API key is correct.
+  * Ensure your MapsIndoors API Key (`02c329e677d431a88480a09` for demo) is correct and the MapsIndoors SDK is loaded.
+  * Verify `YOUR_GOOGLE_MAPS_API_KEY` is correct.
   * Confirm the `venue` ID (`dfea941bb3694e728df92d3d` for demo) is valid and the venue has searchable locations.
   * Make sure the `onSearch` function is being called (e.g., add a `console.log` at the beginning of `onSearch`).
 * **Results list doesn't appear or looks wrong:**

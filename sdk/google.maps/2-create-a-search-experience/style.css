@@ -1,44 +1,54 @@
+/* style.css */
+
+/* Use flexbox for the main layout */
 html, body {
     height: 100%;
     margin: 0;
     padding: 0;
-    overflow: hidden;
+    overflow: hidden; /* Prevent scrollbars if map is full size */
     display: flex;
-    flex-direction: column;
+    flex-direction: column; /* Stack children vertically if needed later */
 }
 
+/* Style for the map container */
 #map {
-    flex-grow: 1;
-    width: 100%;
-    margin: 0;
-    padding: 0;
+  /* Make map fill available space */
+  flex-grow: 1;
+  width: 100%; /* Make map fill width */
+  margin: 0;
+  padding: 0;
 }
 
+
+/* Style for the information panel container */
 .panel {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    z-index: 10;
-    background-color: white;
+    position: absolute; /* Position over the map */
+    top: 10px; /* Distance from the top */
+    left: 10px; /* Distance from the left */
+    z-index: 10; /* Ensure it's above the map and other elements */
+    background-color: white; /* White background for readability */
     padding: 10px;
     border-radius: 5px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    max-height: 80%;
-    overflow-y: auto;
-    border: 1px solid #ccc;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* Add a subtle shadow */
+    max-height: 80%; /* Limits max-height to prevent overflow with details */
+    overflow-y: auto; /* Add scroll if content exceeds max-height */
+    border: 1px solid #ccc; /* Add border for clarity */
     width: 300px;
 }
 
+/* Class to apply flex display and column direction */
 .flex-column {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 10px; /* Space between elements */
 }
 
+/* Class to hide elements */
 .hidden {
     display: none;
 }
 
+/* Style for the search input field */
 #search-input {
     padding: 8px;
     border: 1px solid #ccc;
@@ -46,22 +56,26 @@ html, body {
     font-size: 1rem;
 }
 
+/* Style for the search results list */
 #search-results {
-    list-style: none;
+    list-style: none; /* Remove default list bullets */
     padding: 0;
     margin: 0;
 }
 
+/* Style for individual search result items */
 #search-results li {
     padding: 8px 0;
-    cursor: pointer;
-    border-bottom: 1px solid #eee;
+    cursor: pointer; /* Indicate clickable items */
+    border-bottom: 1px solid #eee; /* Separator line */
 }
 
+/* Style for the last search result item (no bottom border) */
 #search-results li:last-child {
     border-bottom: none;
 }
 
+/* Hover effect for search result items */
 #search-results li:hover {
-    background-color: #f0f0f0;
+    background-color: #f0f0f0; /* Highlight on hover */
 }

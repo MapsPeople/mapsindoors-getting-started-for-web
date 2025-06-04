@@ -1,3 +1,5 @@
+// script.js
+
 // Define options for the MapsIndoors Google Maps view
 const mapViewOptions = {
     element: document.getElementById('map'),
@@ -15,16 +17,25 @@ const mapViewInstance = new mapsindoors.mapView.GoogleMapsView(mapViewOptions);
 // Create a new MapsIndoors instance, linking it to the map view
 const mapsIndoorsInstance = new mapsindoors.MapsIndoors({
     mapView: mapViewInstance,
+    // Set the venue ID to load the map for a specific venue
     venue: 'dfea941bb3694e728df92d3d', // Replace with your actual venue ID
 });
 
-// Add MapsIndoors controls to the Google map (e.g., Floor Selector)
+/** Floor Selector **/
+
+// Create a new HTML div element to host the floor selector
 const floorSelectorElement = document.createElement('div');
+
+// Create a new FloorSelector instance, linking it to the HTML element and the main MapsIndoors instance.
 new mapsindoors.FloorSelector(floorSelectorElement, mapsIndoorsInstance);
+
+// Get the underlying Google Maps instance
 const googleMapInstance = mapViewInstance.getMap();
+
+// Add the floor selector HTML element to the Google Maps controls.
 googleMapInstance.controls[google.maps.ControlPosition.TOP_RIGHT].push(floorSelectorElement);
 
-// --- Search Functionality ---
+/** Search Functionality **/
 
 const searchInputElement = document.getElementById('search-input');
 const searchResultsElement = document.getElementById('search-results');
