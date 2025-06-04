@@ -275,9 +275,7 @@ new mapsindoors.FloorSelector(floorSelectorElement, mapsIndoorsInstance);
 googleMapsInstance.controls[google.maps.ControlPosition.TOP_RIGHT].push(floorSelectorElement);
 
 
-/*
- * Search Functionality (Modified for dynamic content)
- */
+/** Search Functionality **/
 
 // Get references to the search input and results list elements
 const searchInputElement = document.getElementById('search-input');
