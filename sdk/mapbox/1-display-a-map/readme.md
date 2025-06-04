@@ -171,8 +171,6 @@ After completing these steps and opening your `index.html` file in a web browser
 * An interactive map centered on the MapsPeople Austin Office.
 * A Floor Selector control visible in the top-right corner of the map, allowing you to switch between different floors of the venue.
 
-<!-- Placeholder for a screenshot: <img src="path/to/screenshot.png" alt="Map with Floor Selector" width="600"/> -->
-
 ## Troubleshooting
 
 * **Map doesn't load / blank page:**
