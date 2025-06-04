@@ -27,11 +27,10 @@ Open your `index.html` file. You need to include the Mapbox GL JS CSS and JavaSc
 <!-- index.html -->
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MapsIndoors with Mapbox</title> <!-- Updated title -->
+    <title>MapsIndoors</title>
     <link rel="stylesheet" href="style.css">
     <!-- Mapbox GL JS CSS -->
     <link href='https://api.mapbox.com/mapbox-gl-js/v3.10.0/mapbox-gl.css' rel='stylesheet' />
@@ -42,20 +41,16 @@ Open your `index.html` file. You need to include the Mapbox GL JS CSS and JavaSc
     <!-- Mapbox GL JS -->
     <script src='https://api.mapbox.com/mapbox-gl-js/v3.10.0/mapbox-gl.js'></script>
 </head>
-
 <body>
     <!-- This div will hold your map -->
     <div id="map"></div>
-
     <script src="script.js"></script>
 </body>
-
 </html>
 ```
 
 **Explanation of index.html updates:**
 
-* The `<title>` is updated for clarity.
 * The `<link href='https://api.mapbox.com/mapbox-gl-js/v3.10.0/mapbox-gl.css' rel='stylesheet' />` tag in the `<head>` includes the necessary CSS for Mapbox GL JS. This styles the map elements provided by Mapbox.
 * The `<script src='https://api.mapbox.com/mapbox-gl-js/v3.10.0/mapbox-gl.js'></script>` tag in the `<head>` includes the Mapbox GL JS library. **Note**: We are using version `3.10.0` in this example; you should verify this is the currently recommended version or check the [Mapbox documentation](https://docs.mapbox.com/mapbox-gl-js/guides/) for the latest.
 * The MapsIndoors SDK script (`mapsindoors-4.41.0.js.gz`) should already be present from the initial setup guide. You can always check the [MapsIndoors SDK reference documentation](https://app.mapsindoors.com/mapsindoors/js/sdk/latest/index.html) for the latest SDK version.
@@ -128,8 +123,6 @@ const mapsIndoorsInstance = new mapsindoors.MapsIndoors({
     // Set the venue ID to load the map for a specific venue
     venue: 'YOUR_MAPSINDOORS_VENUE_ID', // Replace with your actual venue ID
 });
-
-// Add MapsIndoors controls to the Mapbox map (e.g., Floor Selector)
 
 // Create a new HTML div element to host the floor selector
 const floorSelectorElement = document.createElement('div');
