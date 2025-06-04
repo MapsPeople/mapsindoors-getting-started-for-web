@@ -195,6 +195,8 @@ const mapsIndoorsInstance = new mapsindoors.MapsIndoors({
     venue: 'dfea941bb3694e728df92d3d', // Replace with your actual venue ID
 });
 
+/** Floor Selector **/
+
 // Create a new HTML div element to host the floor selector
 const floorSelectorElement = document.createElement('div');
 
@@ -207,9 +209,7 @@ const googleMapInstance = mapViewInstance.getMap();
 // Add the floor selector HTML element to the Google Maps controls.
 googleMapInstance.controls[google.maps.ControlPosition.TOP_RIGHT].push(floorSelectorElement);
 
-/*
- * Search Functionality
- */
+/** Search Functionality **/
 
 // Get references to the search input and results list elements
 const searchInputElement = document.getElementById('search-input');
@@ -218,67 +218,84 @@ const searchResultsElement = document.getElementById('search-results');
 // Initially hide the search results list
 searchResultsElement.classList.add('hidden');
 
-// Add an event listener to the search input field.
-// The 'input' event triggers the onSearch function every time the user types or modifies the text in the input field.
+// Add an event listener to the search input for 'input' events
+// This calls the onSearch function every time the user types in the input field
 searchInputElement.addEventListener('input', onSearch);
 
 // Function to perform the search and update the results list and map highlighting
 function onSearch() {
+    // Get the current value from the search input
     const query = searchInputElement.value;
+    // Get the current venue from the MapsIndoors instance
     const currentVenue = mapsIndoorsInstance.getVenue();
-    
-    searchResultsElement.innerHTML = null; // Clears previous search results.
-    mapsIndoorsInstance.highlight(); // Clears previous highlights from the map.
-    mapsIndoorsInstance.selectLocation(); // Deselects any location that might have been selected.
 
+    // Clear map highlighting
+    mapsIndoorsInstance.highlight();
+    // Deselect any selected location
+    mapsIndoorsInstance.selectLocation();
+
+    // Check if the query is too short (less than 3 characters) or empty
     if (query.length < 3) {
-        searchResultsElement.classList.add('hidden'); // Hide list if query is too short
-        return;
+        // Hide the results list if the query is too short or empty
+        searchResultsElement.classList.add('hidden');
+        return; // Stop here
     }
 
-    // Prepare search parameters. Note: using currentVenue.name here.
-    const searchParameters = {
-        q: query,
-        venue: currentVenue ? currentVenue.name : undefined
-    };
+    // Define search parameters with the current input value
+    // Include the current venue name in the search parameters
+    const searchParameters = { q: query, venue: currentVenue ? currentVenue.name : undefined };
 
-    mapsindoors.services.LocationsService.getLocations(searchParameters)
-        .then(locations => { // locations is an array of mapsindoors.Location objects.
-            if (locations.length === 0) {
-                const noResultsItem = document.createElement('li');
-                noResultsItem.textContent = 'No results found';
-                searchResultsElement.appendChild(noResultsItem);
-                searchResultsElement.classList.remove('hidden'); // Show list to display "No results"
-                return;
-            }
+    // Call the MapsIndoors LocationsService to get locations based on the search query
+    mapsindoors.services.LocationsService.getLocations(searchParameters).then(locations => {
+        // Clear previous search results
+        searchResultsElement.innerHTML = null;
 
-            const locationIdsToHighlight = [];
+        // If no locations are found, display a "No results found" message
+        if (locations.length === 0) {
+            const noResultsItem = document.createElement('li');
+            noResultsItem.textContent = 'No results found';
+            searchResultsElement.appendChild(noResultsItem);
+            // Ensure the results list is visible to show the "No results found" message
+            searchResultsElement.classList.remove('hidden');
+            return; // Stop here if no results
+        }
 
-            locations.forEach(location => {
-                const listElement = document.createElement('li');
-                listElement.innerHTML = location.properties.name; // Display location name.
-                listElement.dataset.locationId = location.id; // Store ID for potential use
+        // Append new search results to the list
+        locations.forEach(location => {
+            const listElement = document.createElement('li');
+            // Display the location name
+            listElement.innerHTML = location.properties.name;
+            // Store the location ID on the list item for easy access
+            listElement.dataset.locationId = location.id;
 
-                listElement.addEventListener('click', function () {
-                    mapsIndoorsInstance.goTo(location); // Pan and zoom to the location
-                    mapsIndoorsInstance.setFloor(location.properties.floor); // Change to the location's floor
-                    mapsIndoorsInstance.selectLocation(location); // Select and highlight this specific location
-                });
-
-                searchResultsElement.appendChild(listElement);
-                locationIdsToHighlight.push(location.id); // Collect ID for batch highlighting
+            // Add a click event listener to each list item
+            listElement.addEventListener('click', function () {
+                // Move the map to the selected location
+                mapsIndoorsInstance.goTo(location);
+                // Ensure that the map shows the correct floor
+                mapsIndoorsInstance.setFloor(location.properties.floor);
+                // Select the location on the map
+                mapsIndoorsInstance.selectLocation(location);
             });
 
-            searchResultsElement.classList.remove('hidden'); // Make results list visible
-            mapsIndoorsInstance.highlight(locationIdsToHighlight); // Highlight all found locations on the map.
-        })
-        .catch(error => {
-            console.error("Error fetching locations:", error);
-            const errorItem = document.createElement('li');
-            errorItem.textContent = 'Error performing search.';
-            searchResultsElement.appendChild(errorItem);
-            searchResultsElement.classList.remove('hidden');
+            searchResultsElement.appendChild(listElement);
         });
+
+        // Show the results list now that it has content
+        searchResultsElement.classList.remove('hidden');
+
+        // Filter map to only display search results by highlighting them
+        mapsIndoorsInstance.highlight(locations.map(location => location.id));
+    })
+    .catch(error => {
+        // Clear previous search results
+        searchResultsElement.innerHTML = null;
+        console.error("Error fetching locations:", error);
+        const errorItem = document.createElement('li');
+        errorItem.textContent = 'Error performing search.';
+        searchResultsElement.appendChild(errorItem);
+        searchResultsElement.classList.remove('hidden');
+    });
 }
 ```
 
@@ -289,13 +306,13 @@ function onSearch() {
 * **Event Listener**: An `input` event listener is attached to `searchInputElement`. This calls the `onSearch` function each time the user types into the search field.
 * **`onSearch()` Function**: This is the core of the search logic:
   * It retrieves the current `query` from the input field and gets the `currentVenue` using `mapsIndoorsInstance.getVenue()`. For more details on venue information, see the [`getVenue()` reference](https://app.mapsindoors.com/mapsindoors/js/sdk/latest/docs/MapsIndoors.html#getVenue).
-  * It clears previous search results by setting `searchResultsElement.innerHTML = null`.
   * It clears any existing highlights from the map using `mapsIndoorsInstance.highlight()` (called without arguments). See its [API documentation](https://app.mapsindoors.com/mapsindoors/js/sdk/latest/docs/MapsIndoors.html#highlight) for more on clearing highlights.
   * It deselects any currently selected location using `mapsIndoorsInstance.selectLocation()` (called without arguments). Refer to its [API documentation](https://app.mapsindoors.com/mapsindoors/js/sdk/latest/docs/MapsIndoors.html#selectLocation) for deselection behavior.
   * If the `query` length is less than 3 characters, it hides the `searchResultsElement` and exits to prevent overly broad or empty searches.
   * It prepares `searchParameters` with the `q` (query) and scopes the search to the `currentVenue.name`. For a comprehensive list of search options, check out the [LocationsService.getLocations() documentation](https://app.mapsindoors.com/mapsindoors/js/sdk/latest/docs/mapsindoors.services.LocationsService.html#.getLocations)
   * It calls `mapsindoors.services.LocationsService.getLocations(searchParameters)` to fetch locations. This asynchronous method returns a Promise.
   * **`.then(locations => { ... })`**: This block handles the successful response from the LocationsService. `locations` is an array of objects, where each object conforms to the [Location interface](https://app.mapsindoors.com/mapsindoors/js/sdk/latest/docs/mapsindoors.Location.html).
+    * It clears previous search results by setting `searchResultsElement.innerHTML = null`.
     * If no `locations` are found, it displays a "No results found" message in the list.
     * Otherwise, it iterates through each `location` object:
       * Creates an `<li>` element.
