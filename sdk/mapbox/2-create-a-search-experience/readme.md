@@ -22,7 +22,7 @@
 
 This guide details the modifications to HTML, CSS, and JavaScript needed to add a search input field, display search results, and dynamically interact with the map based on user searches.
 
-## Update index.html
+### Update index.html
 
 Open your `index.html` file. The primary structural change to your HTML is the introduction of a dedicated search panel. This panel will house the input field where users type their search queries and an unordered list where the corresponding search results will appear.
 
@@ -30,7 +30,7 @@ Open your `index.html` file. The primary structural change to your HTML is the i
 <!-- index.html -->
 <!DOCTYPE html>
 <html lang="en">
-
+    
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -197,20 +197,23 @@ const mapsIndoorsInstance = new mapsindoors.MapsIndoors({
     venue: 'YOUR_MAPSINDOORS_VENUE_ID', // Replace with your venue ID
 });
 
+/** Floor Selector **/
+
+// Create a new HTML div element to host the floor selector
+const floorSelectorElement = document.createElement('div');
+
+// Create a new FloorSelector instance, linking it to the HTML element and the main MapsIndoors instance.
+new mapsindoors.FloorSelector(floorSelectorElement, mapsIndoorsInstance);
+
 // Get the underlying Mapbox map instance
 const mapboxInstance = mapViewInstance.getMap();
 
-// Floor Selector (from Step 1)
-const floorSelectorElement = document.createElement('div');
-new mapsindoors.FloorSelector(floorSelectorElement, mapsIndoorsInstance);
 mapboxInstance.addControl({
     onAdd: function () { return floorSelectorElement; },
     onRemove: function () { floorSelectorElement.parentNode.removeChild(floorSelectorElement); },
 }, 'top-right');
 
-/*
- * Search Functionality
- */
+/** Search Functionality **/
 
 // Get references to the search input and results list elements
 const searchInputElement = document.getElementById('search-input');
@@ -228,7 +231,7 @@ function onSearch() {
     const query = searchInputElement.value;
     const currentVenue = mapsIndoorsInstance.getVenue();
     
-    searchResultsElement.innerHTML = null; // Clears previous search results.
+  
     mapsIndoorsInstance.highlight(); // Clears previous highlights from the map.
     mapsIndoorsInstance.selectLocation(); // Deselects any location that might have been selected.
 
@@ -245,6 +248,7 @@ function onSearch() {
 
     mapsindoors.services.LocationsService.getLocations(searchParameters)
         .then(locations => { // locations is an array of mapsindoors.Location objects.
+            searchResultsElement.innerHTML = null; // Clears previous search results.
             if (locations.length === 0) {
                 const noResultsItem = document.createElement('li');
                 noResultsItem.textContent = 'No results found';
@@ -290,13 +294,13 @@ function onSearch() {
 * **Event Listener**: An `input` event listener is attached to `searchInputElement`. This calls the `onSearch` function each time the user types into the search field.
 * **`onSearch()` Function**: This is the core of the search logic:
   * It retrieves the current `query` from the input field and gets the `currentVenue` using `mapsIndoorsInstance.getVenue()`. For more details on venue information, see the [`getVenue()` reference](https://app.mapsindoors.com/mapsindoors/js/sdk/latest/docs/MapsIndoors.html#getVenue).
-  * It clears previous search results by setting `searchResultsElement.innerHTML = null`.
   * It clears any existing highlights from the map using `mapsIndoorsInstance.highlight()` (called without arguments). See its [API documentation](https://app.mapsindoors.com/mapsindoors/js/sdk/latest/docs/MapsIndoors.html#highlight) for more on clearing highlights.
   * It deselects any currently selected location using `mapsIndoorsInstance.selectLocation()` (called without arguments). Refer to its [API documentation](https://app.mapsindoors.com/mapsindoors/js/sdk/latest/docs/MapsIndoors.html#selectLocation) for deselection behavior.
   * If the `query` length is less than 3 characters, it hides the `searchResultsElement` and exits to prevent overly broad or empty searches.
   * It prepares `searchParameters` with the `q` (query) and scopes the search to the `currentVenue.name`. For a comprehensive list of search options, check out the [LocationsService.getLocations() documentation](https://app.mapsindoors.com/mapsindoors/js/sdk/latest/docs/mapsindoors.services.LocationsService.html#.getLocations)
   * It calls `mapsindoors.services.LocationsService.getLocations(searchParameters)` to fetch locations. This asynchronous method returns a Promise.
   * **`.then(locations => { ... })`**: This block handles the successful response from the LocationsService. `locations` is an array of objects, where each object conforms to the [Location interface](https://app.mapsindoors.com/mapsindoors/js/sdk/latest/docs/mapsindoors.Location.html).
+    * It clears previous search results by setting `searchResultsElement.innerHTML = null`.
     * If no `locations` are found, it displays a "No results found" message in the list.
     * Otherwise, it iterates through each `location` object:
       * Creates an `<li>` element.
@@ -324,8 +328,6 @@ After implementing these changes:
   * Pan and zoom the map to that location.
   * Switch to the correct floor if necessary.
   * Select and distinctively highlight that specific location on the map.
-
-<!-- Placeholder for a screenshot: <img src="path/to/screenshot_search.png" alt="Map with Search Panel and Results" width="600"/> -->
 
 ## Troubleshooting
 

@@ -33,7 +33,7 @@ const mapboxInstance = mapViewInstance.getMap();
 // Floor Selector
 // Create a new HTML div element to host the floor selector
 const floorSelectorElement = document.createElement('div');
-// Create a new FloorSelector instance, linking it to the HTML element and the main MapsIndoors instance
+// Create a new FloorSelector instance, linking it to the HTML element and the main MapsIndoors instance.
 new mapsindoors.FloorSelector(floorSelectorElement, mapsIndoorsInstance);
 // Add the floor selector HTML element to the Mapbox map using Mapbox's addControl method
 // We wrap the element in an object implementing the IControl interface expected by addControl
@@ -72,8 +72,6 @@ function onSearch() {
     // Get the current venue from the MapsIndoors instance
     const currentVenue = mapsIndoorsInstance.getVenue();
 
-    // Clear previous search results
-    searchResultsElement.innerHTML = null;
     // Clear map highlighting
     mapsIndoorsInstance.highlight();
     // Deselect any selected location
@@ -92,7 +90,9 @@ function onSearch() {
 
     // Call the MapsIndoors LocationsService to get locations based on the search query
     mapsindoors.services.LocationsService.getLocations(searchParameters).then(locations => {
-
+        // Clear previous search results
+        searchResultsElement.innerHTML = null;
+        
         // If no locations are found, display a "No results found" message
         if (locations.length === 0) {
             const noResultsItem = document.createElement('li');
@@ -122,6 +122,13 @@ function onSearch() {
             });
 
             searchResultsElement.appendChild(listElement);
+        })
+        .catch(error => {
+            console.error("Error fetching locations:", error);
+            const errorItem = document.createElement('li');
+            errorItem.textContent = 'Error performing search.';
+            searchResultsElement.appendChild(errorItem);
+            searchResultsElement.classList.remove('hidden');
         });
 
         // Show the results list now that it has content
