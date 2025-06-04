@@ -24,6 +24,7 @@ To display the map, you'll need to update your `index.html`, `style.css`, and `s
 Open your `index.html` file. You need to include the Google Maps JavaScript API and ensure there's a `<div>` element to contain the map.
 
 ```html
+<!-- index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -58,20 +59,25 @@ Open your `index.html` file. You need to include the Google Maps JavaScript API 
 Update your `style.css` file to ensure the `#map` element fills the available space. This is necessary for the map to be visible.
 
 ```css
+/* style.css */
+
+/* Use flexbox for the main layout (from initial setup) */
 html, body {
     height: 100%;
     margin: 0;
     padding: 0;
-    overflow: hidden;
+    overflow: hidden; /* Prevent scrollbars if map is full size */
     display: flex;
-    flex-direction: column;
+    flex-direction: column; /* Stack children vertically if needed later */
 }
 
+/* Style for the map container */
 #map {
-    flex-grow: 1;
-    width: 100%;
-    margin: 0;
-    padding: 0;
+  /* Make map fill available space within its flex parent (body) */
+  flex-grow: 1;
+  width: 100%; /* Make map fill width */
+  margin: 0;
+  padding: 0;
 }
 ```
 
@@ -86,15 +92,13 @@ html, body {
 
 Open your `script.js` file and add the following JavaScript code. This code will initialize the Google Map, then create the MapsIndoors view and instance, and finally add a Floor Selector.
 
-**Note:**
-
-* Replace the demo MapsIndoors API key and venue ID in `script.js` with your own values if you have them.
-* For quick testing, you can use the demo MapsIndoors API key `02c329e6777d431a88480a09` and the Austin office venue ID `dfea941bb3694e728df92d3d` as shown below.
+Remember to replace `YOUR_MAPSINDOORS_API_KEY` with your MapsIndoors API key if not using the demo key. For testing, the demo MapsIndoors API key `02c329e6777d431a88480a09` and the Austin office venue ID `dfea941bb3694e728df92d3d` are used.
 
 ```javascript
 // Define options for the MapsIndoors Google Maps view
 const mapViewOptions = {
     element: document.getElementById('map'),
+    // Initial map center (MapsPeople - Austin Office example)
     center: { lng: -97.74204591828197, lat: 30.36022358949809 },
     zoom: 17,
     maxZoom: 22,
@@ -106,16 +110,24 @@ mapsindoors.MapsIndoors.setMapsIndoorsApiKey('YOUR_MAPSINDOORS_API_KEY');
 // Create a new instance of the MapsIndoors Google Maps view
 const mapViewInstance = new mapsindoors.mapView.GoogleMapsView(mapViewOptions);
 
-// Create a new MapsIndoors instance, linking it to the map view
+// Create a new MapsIndoors instance, linking it to the map view.
+// This is the main object for interacting with MapsIndoors functionalities.
 const mapsIndoorsInstance = new mapsindoors.MapsIndoors({
     mapView: mapViewInstance,
+    // Set the venue ID to load the map for a specific venue
     venue: 'YOUR_MAPSINDOORS_VENUE_ID', // Replace with your actual venue ID
 });
 
-// Add MapsIndoors controls to the Google map (e.g., Floor Selector)
+// Create a new HTML div element to host the floor selector
 const floorSelectorElement = document.createElement('div');
+
+// Create a new FloorSelector instance, linking it to the HTML element and the main MapsIndoors instance.
 new mapsindoors.FloorSelector(floorSelectorElement, mapsIndoorsInstance);
+
+// Get the underlying Google Maps instance
 const googleMapInstance = mapViewInstance.getMap();
+
+// Add the floor selector HTML element to the Google Maps controls.
 googleMapInstance.controls[google.maps.ControlPosition.TOP_RIGHT].push(floorSelectorElement);
 ```
 
@@ -145,7 +157,7 @@ After completing these steps and opening your `index.html` file in a web browser
 
 * **Map doesn't load / blank page:**
   * Check your browser's developer console (usually F12) for any error messages.
-  * Verify that your MapsIndoors API key and venue ID are set correctly in `script.js`.
+  * Verify that `YOUR_MAPSINDOORS_API_KEY` is correctly set (or the demo key is used).
   * Double-check all CDN links in `index.html` are correct and accessible.
 * **Floor selector doesn't appear:**
   * Verify the JavaScript code for creating and adding the floor selector has no typos.

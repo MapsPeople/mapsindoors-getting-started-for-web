@@ -18,8 +18,14 @@ const mapsIndoorsInstance = new mapsindoors.MapsIndoors({
     venue: 'dfea941bb3694e728df92d3d', // Replace with your actual venue ID
 });
 
-// Add MapsIndoors controls to the Google map (e.g., Floor Selector)
+// Create a new HTML div element to host the floor selector
 const floorSelectorElement = document.createElement('div');
+
+// Create a new FloorSelector instance, linking it to the HTML element and the main MapsIndoors instance.
 new mapsindoors.FloorSelector(floorSelectorElement, mapsIndoorsInstance);
+
+// Get the underlying Google Maps instance
 const googleMapInstance = mapViewInstance.getMap();
+
+// Add the floor selector HTML element to the Google Maps controls.
 googleMapInstance.controls[google.maps.ControlPosition.TOP_RIGHT].push(floorSelectorElement);
