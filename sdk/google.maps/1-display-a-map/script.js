@@ -18,6 +18,8 @@ const mapsIndoorsInstance = new mapsindoors.MapsIndoors({
     venue: 'dfea941bb3694e728df92d3d', // Replace with your actual venue ID
 });
 
+/** Floor Selector **/
+
 // Create a new HTML div element to host the floor selector
 const floorSelectorElement = document.createElement('div');
 
