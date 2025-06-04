@@ -36,7 +36,7 @@ Open your `index.html` file. We will add a new `div` within the existing `.panel
     <link rel="stylesheet" href="style.css">
     <link href='https://api.mapbox.com/mapbox-gl-js/v3.10.0/mapbox-gl.css' rel='stylesheet' />
     <script src="https://app.mapsindoors.com/mapsindoors/js/sdk/4.41.0/mapsindoors-4.41.0.js.gz"
-            integrity="sha384-3lk3cwVPj5MpUyo5T605mB0PMHLLisIhNrSREQsQHjD9EXkHBjz9ETgopmTbfMDc"
+            integrity="sha384-tFHttWqE6qOoX8etJurRBBXpH6puWNTgC8Ilq477ltu4EcpHk9ZwFPJDIli9wAS7"
             crossorigin="anonymous"></script>
     <script src='https://api.mapbox.com/mapbox-gl-js/v3.10.0/mapbox-gl.js'></script>
 </head>
@@ -240,36 +240,42 @@ const mapViewOptions = {
 // Set the MapsIndoors API key
 mapsindoors.MapsIndoors.setMapsIndoorsApiKey('YOUR_MAPSINDOORS_API_KEY'); // Replace with your MapsIndoors API key
 
+// Create a new instance of the MapsIndoors Mapbox view
 const mapViewInstance = new mapsindoors.mapView.MapboxV3View(mapViewOptions);
+
+// Create a new MapsIndoors instance
 const mapsIndoorsInstance = new mapsindoors.MapsIndoors({
     mapView: mapViewInstance,
     venue: 'YOUR_MAPSINDOORS_VENUE_ID', // Replace with your venue ID
 });
 
+/** Floor Selector **/
+
+// Create a new HTML div element to host the floor selector
+const floorSelectorElement = document.createElement('div');
+
+// Create a new FloorSelector instance, linking it to the HTML element and the main MapsIndoors instance.
+new mapsindoors.FloorSelector(floorSelectorElement, mapsIndoorsInstance);
+
 // Get the underlying Mapbox map instance
 const mapboxInstance = mapViewInstance.getMap();
 
-// Floor Selector (from Step 1)
-// Create a new HTML div element to host the floor selector
-const floorSelectorElement = document.createElement('div');
-// Create a new FloorSelector instance, linking it to the HTML element and the main MapsIndoors instance
-new mapsindoors.FloorSelector(floorSelectorElement, mapsIndoorsInstance);
-// Add the floor selector HTML element to the Mapbox map using Mapbox's addControl method
 mapboxInstance.addControl({
     onAdd: function () { return floorSelectorElement; },
     onRemove: function () { floorSelectorElement.parentNode.removeChild(floorSelectorElement); },
 }, 'top-right');
 
-/*
- * Search Functionality (Modified for dynamic content)
- */
+/** Search Functionality **/
 
 // Get references to the search input and results list elements
 const searchInputElement = document.getElementById('search-input');
 const searchResultsElement = document.getElementById('search-results');
-const searchContainerElement = document.getElementById('search-container'); // Get the main container
 
-// Add an event listener to the search input for 'input' events
+// Initially hide the search results list
+searchResultsElement.classList.add('hidden');
+
+// Add an event listener to the search input field.
+// The 'input' event triggers the onSearch function every time the user types or modifies the text in the input field.
 searchInputElement.addEventListener('input', onSearch);
 
 // Function to perform the search and update the results list and map highlighting
@@ -306,6 +312,7 @@ function onSearch() {
             const listElement = document.createElement('li');
             listElement.textContent = location.properties.name; // Display location name
 
+            // In Step 3, clicking a search result now shows the details panel and manages map/UI state.
             // Add click event listener to show details in the same container
             listElement.addEventListener('click', () => showDetailsInSearchContainer(location));
 
@@ -316,7 +323,8 @@ function onSearch() {
     });
 }
 
-// --- UI State Management Functions ---
+/** UI State Management Functions **/
+
 const searchUIElement = document.getElementById('search-ui');
 const detailsUIElement = document.getElementById('details-ui');
 const directionsUIElement = document.getElementById('directions-ui');
@@ -345,9 +353,7 @@ function hideDetailsUI() {
 }
 
 
-/*
- * Location Details Functionality (Implemented within the search container)
- */
+/** Location Details Functionality (Implemented within the search container) **/
 
 // Get references to the static details view elements
 const detailsNameElement = document.getElementById('details-name');
@@ -405,6 +411,14 @@ showSearchUI();
     * `mapsIndoorsInstance.goTo(location)`: Pans and zooms the map to the location. See the [`goTo()` documentation](https://app.mapsindoors.com/mapsindoors/js/sdk/latest/docs/MapsIndoors.html#goTo) for more.
     * `mapsIndoorsInstance.setFloor(location.properties.floor)`: Changes the map to the location's floor. The `location.properties.floor` provides the necessary floor index. Consult the [`setFloor()` API documentation](https://app.mapsindoors.com/mapsindoors/js/sdk/latest/docs/MapsIndoors.html#setFloor) for further details.
 * **Initial Setup**: `showSearchUI()` is called once at the end of the script to ensure the application starts with the search interface visible.
+
+### Notice: Change in Click Handler Logic
+
+In Step 2, clicking a search result only highlighted and selected the location on the map. In this step, the click handler has been updated:
+
+* Now, clicking a search result calls `showDetailsInSearchContainer(location)`, which not only highlights and selects the location, but also opens a details panel with more information and manages the UI transition.
+
+This change makes the user experience more interactive and informative, and is reflected in the updated code and explanations above.
 
 ## Expected Outcome
 
