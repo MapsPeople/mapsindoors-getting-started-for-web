@@ -8,6 +8,7 @@
 * Initializing the Google Maps map view using `mapsindoors.mapView.GoogleMapsView`.
 * Creating the main `mapsindoors.MapsIndoors` instance.
 * Adding a `mapsindoors.FloorSelector` control.
+* Handling map clicks to center the map on a clicked POI (location).
 
 ## Prerequisites
 
@@ -131,6 +132,16 @@ const googleMapInstance = mapViewInstance.getMap();
 
 // Add the floor selector HTML element to the Google Maps controls.
 googleMapInstance.controls[google.maps.ControlPosition.TOP_RIGHT].push(floorSelectorElement);
+
+/** Handle Location Clicks on Map **/
+
+// Handle Location Clicks on Map
+function handleLocationClick(location) {
+    if (location && location.id) {
+        mapsIndoorsInstance.goTo(location); // Center the map on the clicked location
+    }
+}
+mapsIndoorsInstance.on('click', handleLocationClick);
 ```
 
 **Explanation of script.js updates:**
@@ -147,6 +158,9 @@ googleMapInstance.controls[google.maps.ControlPosition.TOP_RIGHT].push(floorSele
   * `new mapsindoors.FloorSelector(floorSelectorElement, mapsIndoorsInstance);`: This instantiates the `FloorSelector` control. It takes the HTML element to render into and the `mapsIndoorsInstance` to interact with (e.g., to know available floors and change the current floor). For more details on `FloorSelector`, see its [class reference](https://app.mapsindoors.com/mapsindoors/js/sdk/latest/docs/mapsindoors.FloorSelector.html).
   * `const googleMapInstance = mapViewInstance.getMap();`: The `getMap()` method on our `mapViewInstance` returns the underlying native Google Maps `Map` object. This is necessary to use Google Maps-specific functionalities.
   * `googleMapInstance.controls[google.maps.ControlPosition.TOP_RIGHT].push(floorSelectorElement);`: This uses the native Google Maps controls API to add our `floorSelectorElement` to the map UI in the top-right corner. For more details, refer to the [Google Maps JavaScript API documentation on controls](https://developers.google.com/maps/documentation/javascript/controls).
+  * **Click-to-Center Functionality:**
+  * `function handleLocationClick(location) { ... }`: This function is called whenever a location (POI) on the map is clicked. It checks that the clicked object is a valid MapsIndoors location and then calls `mapsIndoorsInstance.goTo(location)` to center the map on that location.
+  * `mapsIndoorsInstance.on('click', handleLocationClick);`: This line registers the click handler so that clicking any POI on the map will smoothly center the map on that location. This pattern will be reused and expanded in later steps.
 
 ## Expected Outcome
 
@@ -154,6 +168,7 @@ After completing these steps and opening your `index.html` file in a web browser
 
 * An interactive map centered on the MapsPeople Austin Office.
 * A Floor Selector control visible in the top-right corner of the map, allowing you to switch between different floors of the venue.
+* Clicking on any POI or location marker on the map will center the map on that location.
 
 ## Troubleshooting
 
@@ -164,6 +179,9 @@ After completing these steps and opening your `index.html` file in a web browser
 * **Floor selector doesn't appear:**
   * Verify the JavaScript code for creating and adding the floor selector has no typos.
   * Check the console for errors related to `FloorSelector` or Google Maps controls.
+* **Clicking a location does not center the map:**
+  * Ensure the `handleLocationClick` function is correctly defined and registered as an event listener.
+  * Check for any JavaScript errors in the console that might indicate issues with the click handling code.
 
 ## Next Steps
 

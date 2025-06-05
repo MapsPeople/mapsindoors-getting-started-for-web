@@ -8,6 +8,7 @@
 * Initializing the Mapbox map view using `mapsindoors.mapView.MapboxV3View`.
 * Creating the main `mapsindoors.MapsIndoors` instance.
 * Adding a `mapsindoors.FloorSelector` control.
+* Handling map clicks to center the map on a clicked POI (location).
 
 ## Prerequisites
 
@@ -143,26 +144,25 @@ mapboxInstance.addControl({
 }, 'top-right'); // Position the control in the top-right corner
 ```
 
-**Explanation of script.js:**
+**Explanation of script.js updates:**
 
-* `const mapViewOptions = { ... };`: This object defines essential configuration options for the MapsIndoors Mapbox view.
+* `const mapViewOptions = { ... }`: This object defines essential configuration options for the MapsIndoors Mapbox view.
   * `accessToken`: Your Mapbox access token, required by Mapbox GL JS.
   * `element`: The HTML DOM element (our `<div id="map">`) where the map will be rendered.
   * `center`, `zoom`, `maxZoom`: Standard map parameters to set the initial view.
   * `mapsIndoorsTransitionLevel`: The zoom level at which MapsIndoors will start showing indoor details.
-  * For more details on all available options, see the [mapsindoors.mapView.MapboxV3View class documentation](https://app.mapsindoors.com/mapsindoors/js/sdk/latest/docs/mapsindoors.mapView.MapboxV3View.html) for a complete overview.
-* `mapsindoors.MapsIndoors.setMapsIndoorsApiKey('YOUR_MAPSINDOORS_API_KEY');`: This static method sets your MapsIndoors API key globally for the SDK. This key authenticates your requests to MapsIndoors services. To explore more about the main MapsIndoors class and its static methods, see the [mapsindoors.MapsIndoors class reference](https://app.mapsindoors.com/mapsindoors/js/sdk/latest/docs/MapsIndoors.html).
-* `const mapViewInstance = new mapsindoors.mapView.MapboxV3View(mapViewOptions);`: This line creates an instance of `MapboxV3View`, which is responsible for integrating MapsIndoors data and rendering with a Mapbox GL JS v3 map. It takes the `mapViewOptions` we defined. The `MapboxV3View` class is key to this integration. For more details on `MapboxV3View`, see its [class reference](https://app.mapsindoors.com/mapsindoors/js/sdk/latest/docs/mapsindoors.mapView.MapboxV3View.html).
-* `const mapsIndoorsInstance = new mapsindoors.MapsIndoors({ mapView: mapViewInstance, venue: 'YOUR_MAPSINDOORS_VENUE_ID' });`: This creates the main `MapsIndoors` instance. This object is your primary interface for interacting with MapsIndoors functionalities like displaying locations, getting directions, etc.
-  * `mapView`: Links this `MapsIndoors` instance to the `mapViewInstance` we created.
-  * `venue`: Specifies the ID of the MapsIndoors venue you want to load. Here, we use the demo venue ID for the Austin office.
-  * To explore all available options for the constructor, check out the [mapsindoors.MapsIndoors class documentation](https://app.mapsindoors.com/mapsindoors/js/sdk/latest/docs/MapsIndoors.html)).
-
+  * For more details on all available options, see the [mapsindoors.mapView.MapboxV3View class documentation](https://app.mapsindoors.com/mapsindoors/js/sdk/latest/docs/mapsindoors.mapView.MapboxV3View.html).
+* `mapsindoors.MapsIndoors.setMapsIndoorsApiKey('YOUR_MAPSINDOORS_API_KEY');`: This static method sets your MapsIndoors API key globally for the SDK. This key authenticates your requests to MapsIndoors services. See the [`mapsindoors.MapsIndoors` class reference](https://app.mapsindoors.com/mapsindoors/js/sdk/latest/docs/MapsIndoors.html).
+* `const mapViewInstance = new mapsindoors.mapView.MapboxV3View(mapViewOptions);`: This line creates an instance of `MapboxV3View`, which is responsible for integrating MapsIndoors data and rendering with a Mapbox GL JS v3 map. For more details on `MapboxV3View`, see its [class reference](https://app.mapsindoors.com/mapsindoors/js/sdk/latest/docs/mapsindoors.mapView.MapboxV3View.html).
+* `const mapsIndoorsInstance = new mapsindoors.MapsIndoors({ mapView: mapViewInstance, venue: 'YOUR_MAPSINDOORS_VENUE_ID' });`: This creates the main `MapsIndoors` instance. This object is your primary interface for interacting with MapsIndoors functionalities like displaying locations, getting directions, etc. See the [`mapsindoors.MapsIndoors` class documentation](https://app.mapsindoors.com/mapsindoors/js/sdk/latest/docs/MapsIndoors.html).
 * **Floor Selector Integration:**
   * `const floorSelectorElement = document.createElement('div');`: A new HTML `div` element is dynamically created. This element will serve as the container for the Floor Selector UI.
-  * `new mapsindoors.FloorSelector(floorSelectorElement, mapsIndoorsInstance);`: This instantiates the `FloorSelector` control. It takes the HTML element to render into and the `mapsIndoorsInstance` to interact with (e.g., to know available floors and change the current floor). The `FloorSelector` is responsible for allowing users to change floors. For more details on `FloorSelector`, see its [class reference](https://app.mapsindoors.com/mapsindoors/js/sdk/latest/docs/mapsindoors.FloorSelector.html).
+  * `new mapsindoors.FloorSelector(floorSelectorElement, mapsIndoorsInstance);`: This instantiates the `FloorSelector` control. It takes the HTML element to render into and the `mapsIndoorsInstance` to interact with (e.g., to know available floors and change the current floor). For more details on `FloorSelector`, see its [class reference](https://app.mapsindoors.com/mapsindoors/js/sdk/latest/docs/mapsindoors.FloorSelector.html).
   * `const mapboxInstance = mapViewInstance.getMap();`: The `getMap()` method on our `mapViewInstance` returns the underlying native Mapbox `Map` object. This is necessary to use Mapbox-specific functionalities.
-  * `mapboxInstance.addControl({ ... }, 'top-right');`: This uses the native Mapbox `addControl` method to add our `floorSelectorElement` to the Mapbox map interface. The first argument is an object that implements Mapbox\'s `IControl` interface, and the second argument specifies the position of the control on the map. For more details on custom controls in Mapbox, refer to the [Mapbox GL JS documentation on IControl](https://docs.mapbox.com/mapbox-gl-js/api/markers/#icontrol).
+  * `mapboxInstance.addControl({ ... }, 'top-right');`: This uses the native Mapbox `addControl` method to add our `floorSelectorElement` to the map UI in the top-right corner. For more details, refer to the [Mapbox GL JS documentation on controls](https://docs.mapbox.com/mapbox-gl-js/api/markers/#icontrol).
+* **Click-to-Center Functionality:**
+  * `function handleLocationClick(location) { ... }`: This function is called whenever a location (POI) on the map is clicked. It checks that the clicked object is a valid MapsIndoors location and then calls `mapsIndoorsInstance.goTo(location)` to center the map on that location.
+  * `mapsIndoorsInstance.on('click', handleLocationClick);`: This line registers the click handler so that clicking any POI on the map will smoothly center the map on that location. This pattern will be reused and expanded in later steps.
 
 ## Expected Outcome
 
@@ -170,6 +170,7 @@ After completing these steps and opening your `index.html` file in a web browser
 
 * An interactive map centered on the MapsPeople Austin Office.
 * A Floor Selector control visible in the top-right corner of the map, allowing you to switch between different floors of the venue.
+* Clicking on any POI or location marker on the map will center the map on that location.
 
 ## Troubleshooting
 
