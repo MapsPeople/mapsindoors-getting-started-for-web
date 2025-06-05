@@ -184,12 +184,12 @@ const mapViewOptions = {
 };
 
 // Set the MapsIndoors API key
-mapsindoors.MapsIndoors.setMapsIndoorsApiKey('YOUR_MAPSINDOORS_API_KEY');
+mapsindoors.MapsIndoors.setMapsIndoorsApiKey('YOUR_MAPSINDOORS_API_KEY'); // Replace with your MapsIndoors API key
 
 // Create a new instance of the MapsIndoors Google Maps view
 const mapViewInstance = new mapsindoors.mapView.GoogleMapsView(mapViewOptions);
 
-// Create a new MapsIndoors instance, linking it to the map view
+// Create a new MapsIndoors instance, passing the map view
 const mapsIndoorsInstance = new mapsindoors.MapsIndoors({
     mapView: mapViewInstance,
     // Set the venue ID to load the map for a specific venue
@@ -209,6 +209,23 @@ const googleMapInstance = mapViewInstance.getMap();
 
 // Add the floor selector HTML element to the Google Maps controls.
 googleMapInstance.controls[google.maps.ControlPosition.TOP_RIGHT].push(floorSelectorElement);
+
+/** Handle Location Clicks **/
+
+// Function to handle clicks on MapsIndoors locations
+function handleLocationClick(location) {
+    if (location && location.id) {
+        // Move the map to the selected location
+        mapsIndoorsInstance.goTo(location);
+        // Ensure that the map shows the correct floor
+        mapsIndoorsInstance.setFloor(location.properties.floor);
+        // Select the location on the map
+        mapsIndoorsInstance.selectLocation(location);
+    }
+}
+
+// Add an event listener to the MapsIndoors instance for click events on locations
+mapsIndoorsInstance.on('click', handleLocationClick);
 
 /** Search Functionality **/
 
@@ -271,6 +288,7 @@ function onSearch() {
 
             // Add a click event listener to each list item
             listElement.addEventListener('click', function () {
+                // Call the handleLocationClick function when a location in the search results is clicked.
                 handleLocationClick(location);
             });
 
@@ -283,33 +301,14 @@ function onSearch() {
         // Filter map to only display search results by highlighting them
         mapsIndoorsInstance.highlight(locations.map(location => location.id));
     })
-    .catch(error => {
-        // Clear previous search results
-        searchResultsElement.innerHTML = null;
-        console.error("Error fetching locations:", error);
-        const errorItem = document.createElement('li');
-        errorItem.textContent = 'Error performing search.';
-        searchResultsElement.appendChild(errorItem);
-        searchResultsElement.classList.remove('hidden');
-    });
+        .catch(error => {
+            console.error("Error fetching locations:", error);
+            const errorItem = document.createElement('li');
+            errorItem.textContent = 'Error performing search.';
+            searchResultsElement.appendChild(errorItem);
+            searchResultsElement.classList.remove('hidden');
+        });
 }
-
-/** Handle Location Clicks on Map **/
-
-// Function to handle clicks on MapsIndoors locations on the map
-function handleLocationClick(location) {
-    if (location && location.id) {
-        // Move the map to the selected location
-        mapsIndoorsInstance.goTo(location);
-        // Ensure that the map shows the correct floor
-        mapsIndoorsInstance.setFloor(location.properties.floor);
-        // Select the location on the map
-        mapsIndoorsInstance.selectLocation(location);
-    }
-}
-
-// Add an event listener to the MapsIndoors instance for click events on locations
-mapsIndoorsInstance.on('click', handleLocationClick);
 ```
 
 **Explanation of script.js updates:**
