@@ -12,6 +12,7 @@
   * Selecting a specific location: `mapsIndoorsInstance.selectLocation()`.
 * Clearing previous highlights and selections: `mapsIndoorsInstance.highlight()` (with no arguments) and `mapsIndoorsInstance.selectLocation()` (with no arguments).
 * Getting current venue information: `mapsIndoorsInstance.getVenue()`.
+* Handling map clicks to center the map on a clicked POI (location) and reusing the same handler for search results.
 
 ## Prerequisites
 
@@ -183,7 +184,7 @@ const mapViewOptions = {
 };
 
 // Set the MapsIndoors API key
-mapsindoors.MapsIndoors.setMapsIndoorsApiKey('02c329e6777d431a88480a09');
+mapsindoors.MapsIndoors.setMapsIndoorsApiKey('YOUR_MAPSINDOORS_API_KEY');
 
 // Create a new instance of the MapsIndoors Google Maps view
 const mapViewInstance = new mapsindoors.mapView.GoogleMapsView(mapViewOptions);
@@ -192,7 +193,7 @@ const mapViewInstance = new mapsindoors.mapView.GoogleMapsView(mapViewOptions);
 const mapsIndoorsInstance = new mapsindoors.MapsIndoors({
     mapView: mapViewInstance,
     // Set the venue ID to load the map for a specific venue
-    venue: 'dfea941bb3694e728df92d3d', // Replace with your actual venue ID
+    venue: 'YOUR_MAPSINDOORS_VENUE_ID', // Replace with your actual venue ID
 });
 
 /** Floor Selector **/
@@ -270,12 +271,7 @@ function onSearch() {
 
             // Add a click event listener to each list item
             listElement.addEventListener('click', function () {
-                // Move the map to the selected location
-                mapsIndoorsInstance.goTo(location);
-                // Ensure that the map shows the correct floor
-                mapsIndoorsInstance.setFloor(location.properties.floor);
-                // Select the location on the map
-                mapsIndoorsInstance.selectLocation(location);
+                handleLocationClick(location);
             });
 
             searchResultsElement.appendChild(listElement);
@@ -297,6 +293,23 @@ function onSearch() {
         searchResultsElement.classList.remove('hidden');
     });
 }
+
+/** Handle Location Clicks on Map **/
+
+// Function to handle clicks on MapsIndoors locations on the map
+function handleLocationClick(location) {
+    if (location && location.id) {
+        // Move the map to the selected location
+        mapsIndoorsInstance.goTo(location);
+        // Ensure that the map shows the correct floor
+        mapsIndoorsInstance.setFloor(location.properties.floor);
+        // Select the location on the map
+        mapsIndoorsInstance.selectLocation(location);
+    }
+}
+
+// Add an event listener to the MapsIndoors instance for click events on locations
+mapsIndoorsInstance.on('click', handleLocationClick);
 ```
 
 **Explanation of script.js updates:**
@@ -327,6 +340,9 @@ function onSearch() {
     * Makes the `searchResultsElement` visible by removing the `.hidden` class.
     * Calls `mapsIndoorsInstance.highlight(locationIdsToHighlight)` to highlight all found locations on the map simultaneously. The `highlight()` method accepts an array of location IDs. See its [API documentation](https://app.mapsindoors.com/mapsindoors/js/sdk/latest/docs/MapsIndoors.html#highlight) for details on batch highlighting.
   * **`.catch(error => { ... })`**: Handles potential errors during the search request, logging them to the console and displaying an error message in the list.
+* The `handleLocationClick` function is now used for both map clicks and search result clicks, ensuring consistent behavior and code reuse.
+* When a user clicks a search result or a POI on the map, the map will center on that location, switch to the correct floor, and select the location.
+* This pattern will be reused and expanded in later steps.
 
 ## Expected Outcome
 
@@ -345,7 +361,7 @@ After implementing these changes:
 
 * **Search not working / No results:**
   * Check the browser's developer console (F12) for errors.
-  * Ensure your MapsIndoors API Key (`02c329e677d431a88480a09` for demo) is correct and the MapsIndoors SDK is loaded.
+  * Ensure your MapsIndoors API Key (`02c329e6777d431a88480a09` for demo) is correct and the MapsIndoors SDK is loaded.
   * Verify `YOUR_GOOGLE_MAPS_API_KEY` is correct.
   * Confirm the `venue` ID (`dfea941bb3694e728df92d3d` for demo) is valid and the venue has searchable locations.
   * Make sure the `onSearch` function is being called (e.g., add a `console.log` at the beginning of `onSearch`).
