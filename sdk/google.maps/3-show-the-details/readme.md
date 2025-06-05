@@ -1,28 +1,30 @@
 # Step 3: Show Location Details
 
-**Goal:** This guide will demonstrate how to display detailed information about a location when a user selects it from the search results. The details will include the location's name and description, and the map will navigate to and highlight the selected location.
+**Goal:** This guide demonstrates how to display detailed information about a location when a user selects it from the search results or clicks a POI on the map. The details will include the location's name and description, and the map will navigate to and highlight the selected location.
 
 **SDK Concepts Introduced:**
 
-* Responding to user interaction (click) on a search result.
-* Retrieving and displaying location properties: `location.properties.name`, `location.properties.description`.
-* Using `mapsIndoorsInstance.selectLocation()` to visually select and highlight a specific location on the map.
-* Using `mapsIndoorsInstance.goTo()` to pan and zoom the map to the selected location.
-* Using `mapsIndoorsInstance.setFloor()` to switch the map to the floor of the selected location.
-* Dynamically showing and hiding UI elements to switch between search view and details view.
+* Expanding the unified `handleLocationClick` function to trigger the display of detailed location information.
+* Retrieving and displaying specific location properties (e.g., `location.properties.name`, `location.properties.description`) within a dedicated details panel.
+* Implementing UI state management to dynamically show and hide distinct views (search vs. details) within the panel.
+* Applying `mapsIndoorsInstance.deselectLocation()` to manage map state when closing the details view.
 
 ## Prerequisites
 
 * Completion of [Step 2: Create a Search Experience](../2-create-a-search-experience/readme.md).
-* Your MapsIndoors API Key and Google Maps JavaScript API Key should be correctly set up. We will continue using the demo API key `02c329e6777d431a88480a09` and venue ID `dfea941bb3694e728df92d3d` for this example.
+* Your MapsIndoors API Key and Google Maps API Key should be correctly set up. We will continue using the demo API key `02c329e6777d431a88480a09` and venue ID `dfea941bb3694e728df92d3d` for this example.
 
 ## The Code
 
 This step involves modifications to `index.html` to add elements for displaying details, `style.css` to style these new elements, and `script.js` to handle the logic of fetching and displaying location details and interacting with the map.
 
+### Unified Click Handler Pattern
+
+In Step 1, we introduced a reusable click handler (`handleLocationClick`) for POIs on the map. In Step 2, we reused this handler for search result clicks. In this step, we expand the handler to show a details panel with more information about the selected location, and manage the UI state.
+
 ### Update index.html
 
-Open your `index.html` file. Add a new `div` within the existing `.panel` to hold the location details. This `div` will be hidden by default and shown when a location is selected.
+Open your `index.html` file. We will add a new `div` within the existing `.panel` to hold the location details. This `div` will be hidden by default and shown when a location is selected.
 
 ```html
 <!-- index.html -->
@@ -39,13 +41,10 @@ Open your `index.html` file. Add a new `div` within the existing `.panel` to hol
             integrity="sha384-3lk3cwVPj5MpUyo5T605mB0PMHLLisIhNrSREQsQHjD9EXkHBjz9ETgopmTbfMDc"
             crossorigin="anonymous"></script>
 </head>
-
 <body>
     <div id="map"></div>
-
     <div class="panel">
-        <!-- Search UI elements from Step 2 -->
-        <div id="search-ui" class="flex-column"> <!-- Wrap search elements -->
+        <div id="search-ui" class="flex-column">
             <input type="text" id="search-input" placeholder="Search for a location...">
             <ul id="search-results"></ul>
         </div>
@@ -229,22 +228,25 @@ The `script.js` file will be updated to handle showing/hiding the details panel,
 // Define options for the MapsIndoors Google Maps view
 const mapViewOptions = {
     element: document.getElementById('map'),
+    // Initial map center (MapsPeople - Austin Office example)
     center: { lng: -97.74204591828197, lat: 30.36022358949809 },
+    // Initial zoom level
     zoom: 17,
-    maxZoom: 22,
-};
+    // Maximum zoom level
+    maxZoom: 22
+    };
 
 // Set the MapsIndoors API key
-mapsindoors.MapsIndoors.setMapsIndoorsApiKey('02c329e6777d431a88480a09');
+mapsindoors.MapsIndoors.setMapsIndoorsApiKey('YOUR_MAPSINDOORS_API_KEY'); // Replace with your MapsIndoors API key
 
 // Create a new instance of the MapsIndoors Google Maps view
 const mapViewInstance = new mapsindoors.mapView.GoogleMapsView(mapViewOptions);
 
-// Create a new MapsIndoors instance, linking it to the map view
+// Create a new MapsIndoors instance, passing the map view
 const mapsIndoorsInstance = new mapsindoors.MapsIndoors({
     mapView: mapViewInstance,
     // Set the venue ID to load the map for a specific venue
-    venue: 'dfea941bb3694e728df92d3d', // Replace with your actual venue ID
+    venue: 'YOUR_MAPSINDOORS_VENUE_ID', // Replace with your actual venue ID
 });
 
 /** Floor Selector **/
@@ -260,6 +262,26 @@ const googleMapInstance = mapViewInstance.getMap();
 
 // Add the floor selector HTML element to the Google Maps controls.
 googleMapInstance.controls[google.maps.ControlPosition.TOP_RIGHT].push(floorSelectorElement);
+
+/** Handle Location Clicks **/
+
+// Function to handle clicks on MapsIndoors locations
+function handleLocationClick(location) {
+    if (location && location.id) {
+        // Move the map to the selected location
+        mapsIndoorsInstance.goTo(location);
+        // Ensure that the map shows the correct floor
+        mapsIndoorsInstance.setFloor(location.properties.floor);
+        // Select the location on the map
+        mapsIndoorsInstance.selectLocation(location);
+
+        // Show the details UI for the clicked location
+        showDetails(location);
+    }
+}
+
+// Add an event listener to the MapsIndoors instance for click events on locations
+mapsIndoorsInstance.on('click', handleLocationClick);
 
 /** Search Functionality **/
 
@@ -284,7 +306,7 @@ function onSearch() {
     // Clear map highlighting
     mapsIndoorsInstance.highlight();
     // Deselect any selected location
-    mapsIndoorsInstance.selectLocation();
+    mapsIndoorsInstance.deselectLocation();
 
     // Check if the query is too short (less than 3 characters) or empty
     if (query.length < 3) {
@@ -319,10 +341,12 @@ function onSearch() {
             listElement.innerHTML = location.properties.name;
             // Store the location ID on the list item for easy access
             listElement.dataset.locationId = location.id;
-            
-            // In Step 3, clicking a search result now shows the details panel and manages map/UI state.
-            // Add click event listener to show details in the same container
-            listElement.addEventListener('click', () => showDetailsInSearchContainer(location));
+
+            // Add a click event listener to each list item
+            listElement.addEventListener('click', function () {
+                // Call the handleLocationClick function when a location in the search results is clicked.
+                handleLocationClick(location);
+            });
 
             searchResultsElement.appendChild(listElement);
         });
@@ -333,71 +357,63 @@ function onSearch() {
         // Filter map to only display search results by highlighting them
         mapsIndoorsInstance.highlight(locations.map(location => location.id));
     })
-    .catch(error => {
-        // Clear previous search results
-        searchResultsElement.innerHTML = null;
-        console.error("Error fetching locations:", error);
-        const errorItem = document.createElement('li');
-        errorItem.textContent = 'Error performing search.';
-        searchResultsElement.appendChild(errorItem);
-        searchResultsElement.classList.remove('hidden');
-    });
+        .catch(error => {
+            console.error("Error fetching locations:", error);
+            const errorItem = document.createElement('li');
+            errorItem.textContent = 'Error performing search.';
+            searchResultsElement.appendChild(errorItem);
+            searchResultsElement.classList.remove('hidden');
+        });
 }
 
-/** UI State Management Functions **/
+/** UI state management **/
 
 const searchUIElement = document.getElementById('search-ui');
 const detailsUIElement = document.getElementById('details-ui');
-const directionsUIElement = document.getElementById('directions-ui');
 
 function showSearchUI() {
-    hideDetailsUI(); // Ensure details UI is hidden
-    searchUIElement.classList.add('flex-column');
+    hideDetailsUI();
     searchUIElement.classList.remove('hidden');
     searchInputElement.focus();
 }
 
 function showDetailsUI() {
-    hideSearchUI(); // Ensure search UI is hidden
-    detailsUIElement.classList.add('flex-column');
+    hideSearchUI();
     detailsUIElement.classList.remove('hidden');
 }
 
 function hideSearchUI() {
-    searchUIElement.classList.remove('flex-column');
     searchUIElement.classList.add('hidden');
 }
 
 function hideDetailsUI() {
-    detailsUIElement.classList.remove('flex-column');
     detailsUIElement.classList.add('hidden');
 }
 
-
-/** Location Details Functionality (Implemented within the search container) **/
+/** Location Details **/
 
 // Get references to the static details view elements
 const detailsNameElement = document.getElementById('details-name');
 const detailsDescriptionElement = document.getElementById('details-description');
 const detailsCloseButton = document.getElementById('details-close');
 
-// Variable to store the location currently shown in details
-let currentDetailsLocation = null;
+detailsCloseButton.addEventListener('click', () => {
+    mapsIndoorsInstance.deselectLocation(); // Deselect any selected location
+    showSearchUI();
+});
 
-// Function to show the details view for a given location within the search container
-function showDetailsInSearchContainer(location) {
-    currentDetailsLocation = location;
+// Refactored: showDetails only handles UI presentation
+function showDetails(location) {
     detailsNameElement.textContent = location.properties.name;
     detailsDescriptionElement.textContent = location.properties.description || 'No description available.';
-    // Use new UI state functions
     showDetailsUI();
-    // Add click handler to hide details and return to search UI
-    detailsCloseButton.removeEventListener('click', showSearchUI);
-    detailsCloseButton.addEventListener('click', showSearchUI);
-    // Select the location on the map
-    mapsIndoorsInstance.selectLocation(location);
-    mapsIndoorsInstance.goTo(location);
-    mapsIndoorsInstance.setFloor(location.properties.floor);
+}
+
+// Updates the details UI with the selected location's information and shows it.
+function showDetails(location) {
+    detailsNameElement.textContent = location.properties.name;
+    detailsDescriptionElement.textContent = location.properties.description || 'No description available.';
+    showDetailsUI();
 }
 
 // Initial call to set up the search UI when the page loads
@@ -406,40 +422,35 @@ showSearchUI();
 
 **Explanation of script.js updates:**
 
-* **UI Element References**: The script references the search UI (`#search-ui`), details UI (`#details-ui`), and their child elements for displaying the location name (`#details-name`), description (`#details-description`), and the close button (`#details-close`).
-* **Event Listeners**:
-  * An `input` event listener on `searchInputElement` triggers the `onSearch` function whenever the user types.
-  * The click listener for the `detailsCloseButton` is managed so it is not duplicated, and always calls `showSearchUI` to revert to the search view.
-* **UI State Management Functions:**
-  * `showSearchUI()`: Hides the details panel and shows the search panel. Also focuses the search input for user convenience. Ensures only the search UI is visible.
-  * `showDetailsUI()`: Hides the search panel and shows the details panel. Ensures only the details UI is visible.
-  * `hideSearchUI()`: Hides the search panel. Used internally by `showDetailsUI()`.
-  * `hideDetailsUI()`: Hides the details panel. Used internally by `showSearchUI()`.
-* **`onSearch()` Function**:
-  * Clears previous search results from the list, clears any general map highlights, and deselects any specifically selected location.
-  * Calls `showSearchUI()` to ensure the interface is in the correct state (search view visible, details view hidden) when a new search is initiated.
-  * If the search query is less than 3 characters, it ensures the results list is hidden and exits.
-  * Prepares `searchParameters` using the query and the name of the current venue (`currentVenue.name`).
-  * Calls `mapsindoors.services.LocationsService.getLocations()` to fetch matching locations. For detailed information on this service, see the [LocationsService API documentation](https://app.mapsindoors.com/mapsindoors/js/sdk/latest/docs/mapsindoors.services.LocationsService.html#.getLocations).
-  * Dynamically creates list items for each found location. Clicking a list item calls `showDetailsInSearchContainer(location)`.
-* **`showDetailsInSearchContainer(location)` Function**:
-  * Stores the selected `location` object (which conforms to the [Location interface](https://app.mapsindoors.com/mapsindoors/js/sdk/latest/docs/mapsindoors.Location.html)).
-  * Populates the `#details-name` and `#details-description` elements with the location's properties, such as `name` and `description`. The `properties` object on an object conforming to the `Location` interface contains these and other details. For a comprehensive list, see the [Location documentation](https://app.mapsindoors.com/mapsindoors/js/sdk/latest/docs/mapsindoors.Location.html).
-  * Switches the view from the search UI to the details UI using the new UI state management functions.
-  * Attaches (or re-attaches) the event listener to the `detailsCloseButton`. The previous event listener is always removed before adding a new one to avoid duplicate handlers, which could cause the function to be called multiple times.
-  * **Map Interactions**: It then interacts with the map to focus on the selected location:
-    * `mapsIndoorsInstance.selectLocation(location)`: Selects and highlights the location on the map. More details can be found in the [`selectLocation()` reference](https://app.mapsindoors.com/mapsindoors/js/sdk/latest/docs/MapsIndoors.html#selectLocation).
-    * `mapsIndoorsInstance.goTo(location)`: Pans and zooms the map to the location. See the [`goTo()` documentation](https://app.mapsindoors.com/mapsindoors/js/sdk/latest/docs/MapsIndoors.html#goTo) for more.
-    * `mapsIndoorsInstance.setFloor(location.properties.floor)`: Changes the map to the location's floor. The `location.properties.floor` provides the necessary floor index. Consult the [`setFloor()` API documentation](https://app.mapsindoors.com/mapsindoors/js/sdk/latest/docs/MapsIndoors.html#setFloor) for further details.
-* **Initial Setup**: `showSearchUI()` is called once at the end of the script to ensure the application starts with the search interface visible.
+* **Unified Click Handler Implementation**: 
+  * Building upon our approach in previous steps, we've implemented a comprehensive click handler system.
+  * The `handleLocationClick` function manages map interactions (selecting a location, zooming, and changing floors).
+  * This function then calls the `showDetails` function to update the UI presentation.
+  * This separation of concerns makes the code more maintainable and easier to understand.
 
-### Notice: Change in Click Handler Logic
+* **UI State Management Functions**:
+  * `showSearchUI()`: Shows the search interface and hides the details panel.
+  * `showDetailsUI()`: Shows the details interface and hides the search panel.
+  * `hideSearchUI()` and `hideDetailsUI()`: Helper functions to manage UI visibility.
+  * `showDetails(location)`: Updates the details UI with the location's name and description.
+  * The close button in the details panel has an event listener that returns to the search UI.
 
-In Step 2, clicking a search result only highlighted and selected the location on the map. In this step, the click handler has been updated:
+* **Map Interaction Methods**:
+  * `mapsIndoorsInstance.goTo(location)`: Pans and zooms the map to the selected location.
+  * `mapsIndoorsInstance.setFloor(location.properties.floor)`: Switches to the floor where the location exists.
+  * `mapsIndoorsInstance.selectLocation(location)`: Visually highlights the selected location on the map.
 
-* Now, clicking a search result calls `showDetailsInSearchContainer(location)`, which not only highlights and selects the location, but also opens a details panel with more information and manages the UI transition.
+* **Location Properties Access**:
+  * We access `location.properties.name` and `location.properties.description` to display detailed information.
+  * The fallback text "No description available" is shown when description is missing.
 
-This change makes the user experience more interactive and informative, and is reflected in the updated code and explanations above.
+* **Search Result Click Handler**:
+  * Search result clicks now trigger the same handler as map POI clicks, providing a consistent experience.
+  * This unified approach ensures the same behavior whether a user interacts with the map or search results.
+  * The separation between `handleLocationClick` (for map operations) and `showDetails` (for UI updates) creates a cleaner architecture that's easier to maintain and extend.
+
+* **Initial Setup**:
+  * `showSearchUI()` is called at the end to ensure the application starts with the search interface visible.
 
 ## Expected Outcome
 
@@ -452,6 +463,11 @@ After implementing these changes:
   * The selected location will be highlighted on the map.
   * The map will switch to the correct floor of the selected location.
 * Clicking the "Close" button in the details panel will hide the details and show the search input and results list again.
+* When you click a POI on the map:
+  * The details panel will appear showing the location's name and description.
+  * The map will pan and zoom to the selected location.
+  * The selected location will be highlighted on the map.
+  * The map will switch to the correct floor of the selected location.
 
 ## Troubleshooting
 
@@ -462,15 +478,13 @@ After implementing these changes:
   * Confirm CSS for `.hidden`, `#search-ui`, and `#details-ui` is correctly applied and toggled.
 * **Map doesn't navigate or select location:**
   * Ensure `mapsIndoorsInstance` is correctly initialized.
-  * Verify the `location` object passed to `showDetailsInSearchContainer` is a valid object conforming to the `Location` interface.
+  * Verify the `location` object passed to `handleLocationClick` is a valid object conforming to the `Location` interface.
   * Check for console errors when `selectLocation`, `goTo`, or `setFloor` are called.
 * **"Close" button doesn't work:**
   * Ensure the event listener is correctly attached to `detailsCloseButton` and that `showSearchUI` is called.
 
 ## Next Steps
 
-You've now enhanced your application to display detailed information about locations. Users can not only find locations but also learn more about them.
-
-Next, you will learn how to get and display directions between locations:
+You've now enhanced your application to display detailed information about locations using a unified click handler. Next, you'll learn how to get and display directions between locations:
 
 * [Step 4: Getting Directions](../4-getting-directions/readme.md)

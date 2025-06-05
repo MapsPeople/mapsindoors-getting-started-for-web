@@ -8,6 +8,7 @@
 * Initializing the Google Maps map view using `mapsindoors.mapView.GoogleMapsView`.
 * Creating the main `mapsindoors.MapsIndoors` instance.
 * Adding a `mapsindoors.FloorSelector` control.
+* Using `mapsIndoorsInstance.goTo()` to pan and zoom the map to the selected location.
 * Handling map clicks to center the map on a clicked POI (location).
 
 ## Prerequisites
@@ -51,7 +52,7 @@ Open your `index.html` file. You need to include the Google Maps JavaScript API 
 
 **Explanation of index.html updates:**
 
-* The Google Maps JavaScript API is included with your API key. Replace `YOUR_GOOGLE_MAPS_API_KEY` with your actual key.
+* A reference to the Google Maps JavaScript API is included via a `<script>` tag. Ensure you replace `YOUR_GOOGLE_MAPS_API_KEY` with your actual key.
 * The MapsIndoors SDK script (`mapsindoors-4.41.0.js.gz`) should already be present from the initial setup guide. You can always check the [MapsIndoors SDK reference documentation](https://app.mapsindoors.com/mapsindoors/js/sdk/latest/index.html) for the latest SDK version.
 * An empty `<div>` with the attribute `id="map"` was added inside the `<body>`. This `div` is crucial as it serves as the container where both the Google base map and the MapsIndoors layers will be rendered.
 
