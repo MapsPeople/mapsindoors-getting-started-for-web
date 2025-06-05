@@ -32,9 +32,9 @@ const googleMapInstance = mapViewInstance.getMap();
 // Add the floor selector HTML element to the Google Maps controls.
 googleMapInstance.controls[google.maps.ControlPosition.TOP_RIGHT].push(floorSelectorElement);
 
-/** Handle Location Clicks on Map **/
+/** Handle Location Clicks **/
 
-// Function to handle clicks on MapsIndoors locations on the map
+// Function to handle clicks on MapsIndoors locations
 function handleLocationClick(location) {
     if (location && location.id) { // Ensure a valid MapsIndoors location is clicked
         mapsIndoorsInstance.goTo(location); // Center the map on the clicked location

@@ -96,6 +96,8 @@ Open your `script.js` file and add the following JavaScript code. This code will
 Remember to replace `YOUR_MAPSINDOORS_API_KEY` with your MapsIndoors API key if not using the demo key. For testing, the demo MapsIndoors API key `02c329e6777d431a88480a09` and the Austin office venue ID `dfea941bb3694e728df92d3d` are used.
 
 ```javascript
+// script.js
+
 // Define options for the MapsIndoors Google Maps view
 const mapViewOptions = {
     element: document.getElementById('map'),
