@@ -14,19 +14,66 @@ mapsindoors.MapsIndoors.setMapsIndoorsApiKey('02c329e6777d431a88480a09');
 // Create a new instance of the MapsIndoors Google Maps view
 const mapViewInstance = new mapsindoors.mapView.GoogleMapsView(mapViewOptions);
 
-// Create a new MapsIndoors instance, linking it to the map view
+// Create a new MapsIndoors instance, passing the map view
 const mapsIndoorsInstance = new mapsindoors.MapsIndoors({
     mapView: mapViewInstance,
     // Set the venue ID to load the map for a specific venue
     venue: 'dfea941bb3694e728df92d3d', // Replace with your actual venue ID
 });
 
+/** Floor Selector **/
 
-// Add MapsIndoors controls to the Google map (e.g., Floor Selector)
+// Create a new HTML div element to host the floor selector
 const floorSelectorElement = document.createElement('div');
+
+// Create a new FloorSelector instance, linking it to the HTML element and the main MapsIndoors instance.
 new mapsindoors.FloorSelector(floorSelectorElement, mapsIndoorsInstance);
+
+// Get the underlying Google Maps instance
 const googleMapInstance = mapViewInstance.getMap();
+
+// Add the floor selector HTML element to the Google Maps controls.
 googleMapInstance.controls[google.maps.ControlPosition.TOP_RIGHT].push(floorSelectorElement);
+
+/** Handle Location Clicks **/
+
+// Function to handle clicks on MapsIndoors locations
+function handleLocationClick(location) {
+    if (location && location.id) {
+        // Move the map to the selected location
+        mapsIndoorsInstance.goTo(location);
+        // Ensure that the map shows the correct floor
+        mapsIndoorsInstance.setFloor(location.properties.floor);
+        // Select the location on the map
+        mapsIndoorsInstance.selectLocation(location);
+
+        // Show the details UI for the clicked location
+        showDetails(location);
+    }
+}
+
+// Add an event listener to the MapsIndoors instance for click events on locations
+mapsIndoorsInstance.on('click', handleLocationClick);
+
+/** Handle Location Clicks **/
+
+// Function to handle clicks on MapsIndoors locations
+function handleLocationClick(location) {
+    if (location && location.id) {
+        // Move the map to the selected location
+        mapsIndoorsInstance.goTo(location);
+        // Ensure that the map shows the correct floor
+        mapsIndoorsInstance.setFloor(location.properties.floor);
+        // Select the location on the map
+        mapsIndoorsInstance.selectLocation(location);
+
+        // Show the details UI for the clicked location
+        showDetails(location);
+    }
+}
+
+// Add an event listener to the MapsIndoors instance for click events on locations
+mapsIndoorsInstance.on('click', handleLocationClick);
 
 /** Search Functionality **/
 
@@ -34,26 +81,12 @@ googleMapInstance.controls[google.maps.ControlPosition.TOP_RIGHT].push(floorSele
 const searchInputElement = document.getElementById('search-input');
 const searchResultsElement = document.getElementById('search-results');
 
+// Initially hide the search results list
+searchResultsElement.classList.add('hidden');
+
 // Add an event listener to the search input for 'input' events
+// This calls the onSearch function every time the user types in the input field
 searchInputElement.addEventListener('input', onSearch);
-
-// --- UI State Management Functions ---
-const searchUIElement = document.getElementById('search-ui');
-const detailsUIElement = document.getElementById('details-ui');
-const detailsNameElement = document.getElementById('details-name');
-const detailsDescriptionElement = document.getElementById('details-description');
-const detailsCloseButton = document.getElementById('details-close');
-
-function showSearchUI() {
-    detailsUIElement.classList.add('hidden');
-    searchUIElement.classList.remove('hidden');
-    searchInputElement.focus();
-}
-
-function showDetailsUI() {
-    searchUIElement.classList.add('hidden');
-    detailsUIElement.classList.remove('hidden');
-}
 
 // Function to perform the search and update the results list and map highlighting
 function onSearch() {
@@ -65,7 +98,7 @@ function onSearch() {
     // Clear map highlighting
     mapsIndoorsInstance.highlight();
     // Deselect any selected location
-    mapsIndoorsInstance.selectLocation();
+    mapsIndoorsInstance.deselectLocation();
 
     // Check if the query is too short (less than 3 characters) or empty
     if (query.length < 3) {
@@ -100,10 +133,12 @@ function onSearch() {
             listElement.innerHTML = location.properties.name;
             // Store the location ID on the list item for easy access
             listElement.dataset.locationId = location.id;
-            
-            // In Step 3, clicking a search result now shows the details panel and manages map/UI state.
-            // Add click event listener to show details in the same container
-            listElement.addEventListener('click', () => showDetailsInSearchContainer(location));
+
+            // Add a click event listener to each list item
+            listElement.addEventListener('click', function () {
+                // Call the handleLocationClick function when a location in the search results is clicked.
+                handleLocationClick(location);
+            });
 
             searchResultsElement.appendChild(listElement);
         });
@@ -114,26 +149,56 @@ function onSearch() {
         // Filter map to only display search results by highlighting them
         mapsIndoorsInstance.highlight(locations.map(location => location.id));
     })
-    .catch(error => {
-        // Clear previous search results
-        searchResultsElement.innerHTML = null;
-        console.error("Error fetching locations:", error);
-        const errorItem = document.createElement('li');
-        errorItem.textContent = 'Error performing search.';
-        searchResultsElement.appendChild(errorItem);
-        searchResultsElement.classList.remove('hidden');
-    });
+        .catch(error => {
+            console.error("Error fetching locations:", error);
+            const errorItem = document.createElement('li');
+            errorItem.textContent = 'Error performing search.';
+            searchResultsElement.appendChild(errorItem);
+            searchResultsElement.classList.remove('hidden');
+        });
 }
 
-detailsCloseButton.addEventListener('click', showSearchUI);
+/** UI state management **/
 
-function showDetailsInSearchContainer(location) {
+const searchUIElement = document.getElementById('search-ui');
+const detailsUIElement = document.getElementById('details-ui');
+
+function showSearchUI() {
+    hideDetailsUI();
+    searchUIElement.classList.remove('hidden');
+    searchInputElement.focus();
+}
+
+function showDetailsUI() {
+    hideSearchUI();
+    detailsUIElement.classList.remove('hidden');
+}
+
+function hideSearchUI() {
+    searchUIElement.classList.add('hidden');
+}
+
+function hideDetailsUI() {
+    detailsUIElement.classList.add('hidden');
+}
+
+/** Location Details **/
+
+// Get references to the static details view elements
+const detailsNameElement = document.getElementById('details-name');
+const detailsDescriptionElement = document.getElementById('details-description');
+const detailsCloseButton = document.getElementById('details-close');
+
+detailsCloseButton.addEventListener('click', () => {
+    mapsIndoorsInstance.deselectLocation(); // Deselect any selected location
+    showSearchUI();
+});
+
+// Refactored: showDetails only handles UI presentation
+function showDetails(location) {
     detailsNameElement.textContent = location.properties.name;
     detailsDescriptionElement.textContent = location.properties.description || 'No description available.';
     showDetailsUI();
-    mapsIndoorsInstance.selectLocation(location);
-    mapsIndoorsInstance.goTo(location);
-    mapsIndoorsInstance.setFloor(location.properties.floor);
 }
 
 // Initial call to set up the search UI when the page loads
