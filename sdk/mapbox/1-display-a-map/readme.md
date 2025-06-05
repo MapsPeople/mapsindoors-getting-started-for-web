@@ -8,6 +8,7 @@
 * Initializing the Mapbox map view using `mapsindoors.mapView.MapboxV3View`.
 * Creating the main `mapsindoors.MapsIndoors` instance.
 * Adding a `mapsindoors.FloorSelector` control.
+* Using `mapsIndoorsInstance.goTo()` to pan and zoom the map to the selected location.
 * Handling map clicks to center the map on a clicked POI (location).
 
 ## Prerequisites
@@ -102,23 +103,21 @@ Remember to replace `YOUR_MAPBOX_ACCESS_TOKEN` with your actual Mapbox access to
 
 // Define options for the MapsIndoors Mapbox view
 const mapViewOptions = {
-    accessToken: 'YOUR_MAPBOX_ACCESS_TOKEN',
+    accessToken: 'YOUR_MAPBOX_ACCESS_TOKEN', // Replace with your Mapbox token
     element: document.getElementById('map'),
-    // Initial map center (MapsPeople - Austin Office example)
-    center: { lng: -97.74204591828197, lat: 30.36022358949809 },
+    center: { lng: -97.74204591828197, lat: 30.36022358949809 }, // Example: MapsPeople Austin Office
     zoom: 17,
     maxZoom: 22,
     mapsIndoorsTransitionLevel: 16,
 };
 
 // Set the MapsIndoors API key
-mapsindoors.MapsIndoors.setMapsIndoorsApiKey('YOUR_MAPSINDOORS_API_KEY');
+mapsindoors.MapsIndoors.setMapsIndoorsApiKey('YOUR_MAPSINDOORS_API_KEY'); // Replace with your MapsIndoors API key
 
-// Create a new instance of the MapsIndoors Mapbox view (for Mapbox GL JS v3)
+// Create a new instance of the MapsIndoors Mapbox view
 const mapViewInstance = new mapsindoors.mapView.MapboxV3View(mapViewOptions);
 
-// Create a new MapsIndoors instance, linking it to the map view.
-// This is the main object for interacting with MapsIndoors functionalities.
+// Create a new MapsIndoors instance, passing the map view
 const mapsIndoorsInstance = new mapsindoors.MapsIndoors({
     mapView: mapViewInstance,
     // Set the venue ID to load the map for a specific venue
@@ -139,11 +138,19 @@ const mapboxInstance = mapViewInstance.getMap();
 // Add the floor selector HTML element to the Mapbox map using Mapbox's addControl method
 // We wrap the element in an object implementing the IControl interface expected by addControl
 mapboxInstance.addControl({
-    onAdd: function () { return floorSelectorElement; },
-    onRemove: function () { floorSelectorElement.parentNode.removeChild(floorSelectorElement); },
-}, 'top-right'); // Position the control in the top-right corner
+    onAdd: function () {
+        // This function is called when the control is added to the map.
+        // It should return the control's DOM element.
+        return floorSelectorElement;
+    },
+    onRemove: function () {
+        // This function is called when the control is removed from the map.
+        // Clean up any event listeners or resources here.
+        floorSelectorElement.parentNode.removeChild(floorSelectorElement);
+    },
+}, 'top-right'); // Optional: Specify a position ('top-left', 'top-right', 'bottom-left', 'bottom-right')
 
-/** Handle Location Clicks on Map **/
+/** Handle Location Clicks **/
 
 // Handle Location Clicks on Map
 function handleLocationClick(location) {
