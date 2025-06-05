@@ -24,17 +24,19 @@ const mapViewInstance = new mapsindoors.mapView.MapboxV3View(mapViewOptions);
 const mapsIndoorsInstance = new mapsindoors.MapsIndoors({
     mapView: mapViewInstance,
     // Set the venue ID to load the map for a specific venue
-    venue: 'dfea941bb3694e728df92d3d',
+    venue: 'dfea941bb3694e728df92d3d', // Replace with your actual venue ID
 });
+
+/** Floor Selector **/
+
+// Create a new HTML div element to host the floor selector
+const floorSelectorElement = document.createElement('div');
+
+// Create a new FloorSelector instance, linking it to the HTML element and the main MapsIndoors instance.
+new mapsindoors.FloorSelector(floorSelectorElement, mapsIndoorsInstance);
 
 // Get the underlying Mapbox map instance
 const mapboxInstance = mapViewInstance.getMap();
-
-// Floor Selector
-// Create a new HTML div element to host the floor selector
-const floorSelectorElement = document.createElement('div');
-// Create a new FloorSelector instance, linking it to the HTML element and the main MapsIndoors instance.
-new mapsindoors.FloorSelector(floorSelectorElement, mapsIndoorsInstance);
 // Add the floor selector HTML element to the Mapbox map using Mapbox's addControl method
 // We wrap the element in an object implementing the IControl interface expected by addControl
 mapboxInstance.addControl({
@@ -50,9 +52,24 @@ mapboxInstance.addControl({
     },
 }, 'top-right'); // Optional: Specify a position ('top-left', 'top-right', 'bottom-left', 'bottom-right')
 
-/*
- * Search Functionality
- */
+/** Handle Location Clicks **/
+
+// Function to handle clicks on MapsIndoors locations
+function handleLocationClick(location) {
+    if (location && location.id) {
+        // Move the map to the selected location
+        mapsIndoorsInstance.goTo(location);
+        // Ensure that the map shows the correct floor
+        mapsIndoorsInstance.setFloor(location.properties.floor);
+        // Select the location on the map
+        mapsIndoorsInstance.selectLocation(location);
+    }
+}
+
+// Add an event listener to the MapsIndoors instance for click events on locations
+mapsIndoorsInstance.on('click', handleLocationClick);
+
+/** Search Functionality **/
 
 // Get references to the search input and results list elements
 const searchInputElement = document.getElementById('search-input');
@@ -92,7 +109,7 @@ function onSearch() {
     mapsindoors.services.LocationsService.getLocations(searchParameters).then(locations => {
         // Clear previous search results
         searchResultsElement.innerHTML = null;
-        
+
         // If no locations are found, display a "No results found" message
         if (locations.length === 0) {
             const noResultsItem = document.createElement('li');
@@ -113,22 +130,11 @@ function onSearch() {
 
             // Add a click event listener to each list item
             listElement.addEventListener('click', function () {
-                // Move the map to the selected location
-                mapsIndoorsInstance.goTo(location);
-                // Ensure that the map shows the correct floor
-                mapsIndoorsInstance.setFloor(location.properties.floor);
-                // Select the location on the map
-                mapsIndoorsInstance.selectLocation(location);
+                // Call the handleLocationClick function when a location in the search results is clicked.
+                handleLocationClick(location);
             });
 
             searchResultsElement.appendChild(listElement);
-        })
-        .catch(error => {
-            console.error("Error fetching locations:", error);
-            const errorItem = document.createElement('li');
-            errorItem.textContent = 'Error performing search.';
-            searchResultsElement.appendChild(errorItem);
-            searchResultsElement.classList.remove('hidden');
         });
 
         // Show the results list now that it has content
@@ -136,5 +142,12 @@ function onSearch() {
 
         // Filter map to only display search results by highlighting them
         mapsIndoorsInstance.highlight(locations.map(location => location.id));
-    });
+    })
+        .catch(error => {
+            console.error("Error fetching locations:", error);
+            const errorItem = document.createElement('li');
+            errorItem.textContent = 'Error performing search.';
+            searchResultsElement.appendChild(errorItem);
+            searchResultsElement.classList.remove('hidden');
+        });
 }
