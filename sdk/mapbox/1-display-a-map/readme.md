@@ -125,15 +125,15 @@ const mapsIndoorsInstance = new mapsindoors.MapsIndoors({
     venue: 'YOUR_MAPSINDOORS_VENUE_ID', // Replace with your actual venue ID
 });
 
+/** Floor Selector **/
+
 // Create a new HTML div element to host the floor selector
 const floorSelectorElement = document.createElement('div');
 
 // Create a new FloorSelector instance, linking it to the HTML element and the main MapsIndoors instance.
-// The FloorSelector control allows users to change floors on the map.
 new mapsindoors.FloorSelector(floorSelectorElement, mapsIndoorsInstance);
 
-// Get the underlying Mapbox map instance from the MapsIndoors map view
-// This is needed to use Mapbox's native methods like addControl.
+// Get the underlying Mapbox map instance
 const mapboxInstance = mapViewInstance.getMap();
 
 // Add the floor selector HTML element to the Mapbox map using Mapbox's addControl method
@@ -182,6 +182,9 @@ After completing these steps and opening your `index.html` file in a web browser
 * **Floor selector doesn't appear:**
   * Verify the JavaScript code for creating and adding the floor selector has no typos.
   * Check the console for errors related to `FloorSelector` or `addControl`.
+* **Clicking a location does not center the map:**
+  * Ensure the `handleLocationClick` function is correctly defined and registered as an event listener.
+  * Check for any JavaScript errors in the console that might indicate issues with the click handling code.
 
 ## Next Steps
 
