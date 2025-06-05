@@ -142,6 +142,18 @@ mapboxInstance.addControl({
     onAdd: function () { return floorSelectorElement; },
     onRemove: function () { floorSelectorElement.parentNode.removeChild(floorSelectorElement); },
 }, 'top-right'); // Position the control in the top-right corner
+
+/** Handle Location Clicks on Map **/
+
+// Handle Location Clicks on Map
+function handleLocationClick(location) {
+    if (location && location.id) {
+        mapsIndoorsInstance.goTo(location); // Center the map on the clicked location
+    }
+}
+
+// Add an event listener to the MapsIndoors instance for click events on locations
+mapsIndoorsInstance.on('click', handleLocationClick);
 ```
 
 **Explanation of script.js updates:**

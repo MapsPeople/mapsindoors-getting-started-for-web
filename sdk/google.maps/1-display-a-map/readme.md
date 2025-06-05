@@ -143,6 +143,8 @@ function handleLocationClick(location) {
         mapsIndoorsInstance.goTo(location); // Center the map on the clicked location
     }
 }
+
+// Add an event listener to the MapsIndoors instance for click events on locations
 mapsIndoorsInstance.on('click', handleLocationClick);
 ```
 
