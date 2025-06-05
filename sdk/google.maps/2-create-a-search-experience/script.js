@@ -96,12 +96,7 @@ function onSearch() {
 
             // Add a click event listener to each list item
             listElement.addEventListener('click', function () {
-                // Move the map to the selected location
-                mapsIndoorsInstance.goTo(location);
-                // Ensure that the map shows the correct floor
-                mapsIndoorsInstance.setFloor(location.properties.floor);
-                // Select the location on the map
-                mapsIndoorsInstance.selectLocation(location);
+                handleLocationClick(location);
             });
 
             searchResultsElement.appendChild(listElement);
@@ -121,3 +116,20 @@ function onSearch() {
             searchResultsElement.classList.remove('hidden');
         });
 }
+
+/** Handle Location Clicks on Map **/
+
+// Function to handle clicks on MapsIndoors locations on the map
+function handleLocationClick(location) {
+    if (location && location.id) {
+        // Move the map to the selected location
+        mapsIndoorsInstance.goTo(location);
+        // Ensure that the map shows the correct floor
+        mapsIndoorsInstance.setFloor(location.properties.floor);
+        // Select the location on the map
+        mapsIndoorsInstance.selectLocation(location);
+    }
+}
+
+// Add an event listener to the MapsIndoors instance for click events on locations
+mapsIndoorsInstance.on('click', handleLocationClick);
