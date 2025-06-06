@@ -214,9 +214,9 @@ html, body {
     background-color: #ccc; /* Grey */
     color: #333;
 }
- #details-close:hover {
-     background-color: #bbb;
- }
+#details-close:hover {
+    background-color: #bbb;
+}
 ```
 
 **Explanation of style.css updates:**
