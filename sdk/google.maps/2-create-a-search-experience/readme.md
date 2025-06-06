@@ -7,12 +7,10 @@
 * Using `mapsindoors.services.LocationsService.getLocations()` to fetch locations based on a query.
 * Interacting with the map based on search results:
   * Highlighting multiple locations: `mapsIndoorsInstance.highlight()`.
-  * Navigating to a location: `mapsIndoorsInstance.goTo()`.
   * Setting the floor: `mapsIndoorsInstance.setFloor()`.
   * Selecting a specific location: `mapsIndoorsInstance.selectLocation()`.
 * Clearing previous highlights and selections: `mapsIndoorsInstance.highlight()` (with no arguments) and `mapsIndoorsInstance.deselectLocation()`.
 * Getting current venue information: `mapsIndoorsInstance.getVenue()`.
-* Handling map clicks to center the map on a clicked POI (location) and reusing the same handler for search results.
 
 ## Prerequisites
 
@@ -250,7 +248,7 @@ function onSearch() {
     // Clear map highlighting
     mapsIndoorsInstance.highlight();
     // Deselect any selected location
-    mapsIndoorsInstance.selectLocation();
+    mapsIndoorsInstance.deselectLocation();
 
     // Check if the query is too short (less than 3 characters) or empty
     if (query.length < 3) {
@@ -319,7 +317,7 @@ function onSearch() {
 * **`onSearch()` Function**: This is the core of the search logic:
   * It retrieves the current `query` from the input field and gets the `currentVenue` using `mapsIndoorsInstance.getVenue()`. For more details on venue information, see the [`getVenue()` reference](https://app.mapsindoors.com/mapsindoors/js/sdk/latest/docs/MapsIndoors.html#getVenue).
   * It clears any existing highlights from the map using `mapsIndoorsInstance.highlight()` (called without arguments). See its [API documentation](https://app.mapsindoors.com/mapsindoors/js/sdk/latest/docs/MapsIndoors.html#highlight) for more on clearing highlights.
-  * It deselects any currently selected location using `mapsIndoorsInstance.selectLocation()` (called without arguments). Refer to its [API documentation](https://app.mapsindoors.com/mapsindoors/js/sdk/latest/docs/MapsIndoors.html#selectLocation) for deselection behavior.
+  * It deselects any currently selected location using `mapsIndoorsInstance.deselectLocation()` (called without arguments). Refer to its [API documentation](https://app.mapsindoors.com/mapsindoors/js/sdk/latest/docs/MapsIndoors.html#deselectLocation) for deselection behavior.
   * If the `query` length is less than 3 characters, it hides the `searchResultsElement` and exits to prevent overly broad or empty searches.
   * It prepares `searchParameters` with the `q` (query) and scopes the search to the `currentVenue.name`. For a comprehensive list of search options, check out the [LocationsService.getLocations() documentation](https://app.mapsindoors.com/mapsindoors/js/sdk/latest/docs/mapsindoors.services.LocationsService.html#.getLocations)
   * It calls `mapsindoors.services.LocationsService.getLocations(searchParameters)` to fetch locations. This asynchronous method returns a Promise.

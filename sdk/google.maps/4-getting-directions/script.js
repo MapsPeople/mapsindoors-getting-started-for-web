@@ -5,7 +5,7 @@ const mapViewOptions = {
     element: document.getElementById('map'),
     center: { lng: -97.74204591828197, lat: 30.36022358949809 },
     zoom: 17,
-    maxZoom: 22,
+    maxZoom: 22
 };
 
 // Set the MapsIndoors API key
@@ -34,26 +34,6 @@ const googleMapInstance = mapViewInstance.getMap();
 
 // Add the floor selector HTML element to the Google Maps controls.
 googleMapInstance.controls[google.maps.ControlPosition.TOP_RIGHT].push(floorSelectorElement);
-
-/** Handle Location Clicks **/
-
-// Function to handle clicks on MapsIndoors locations
-function handleLocationClick(location) {
-    if (location && location.id) {
-        // Move the map to the selected location
-        mapsIndoorsInstance.goTo(location);
-        // Ensure that the map shows the correct floor
-        mapsIndoorsInstance.setFloor(location.properties.floor);
-        // Select the location on the map
-        mapsIndoorsInstance.selectLocation(location);
-
-        // Show the details UI for the clicked location
-        showDetails(location);
-    }
-}
-
-// Add an event listener to the MapsIndoors instance for click events on locations
-mapsIndoorsInstance.on('click', handleLocationClick);
 
 /** Handle Location Clicks **/
 

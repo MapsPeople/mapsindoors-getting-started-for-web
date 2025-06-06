@@ -9,9 +9,8 @@
   * Highlighting multiple locations: `mapsIndoorsInstance.highlight()`.
   * Setting the floor: `mapsIndoorsInstance.setFloor()`.
   * Selecting a specific location: `mapsIndoorsInstance.selectLocation()`.
-* Clearing previous highlights and selections: `mapsIndoorsInstance.highlight()` (with no arguments) and `mapsIndoorsInstance.selectLocation()` (with no arguments).
+* Clearing previous highlights and selections: `mapsIndoorsInstance.highlight()` (with no arguments) and `mapsIndoorsInstance.deselectLocation()`.
 * Getting current venue information: `mapsIndoorsInstance.getVenue()`.
-* Handling map clicks to center the map on a clicked POI (location) and reusing the same handler for search results.
 
 ## Prerequisites
 

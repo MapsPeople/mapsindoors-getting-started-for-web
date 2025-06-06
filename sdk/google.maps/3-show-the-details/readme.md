@@ -2,12 +2,17 @@
 
 **Goal:** This guide demonstrates how to display detailed information about a location when a user selects it from the search results or clicks a POI on the map. The details will include the location's name and description, and the map will navigate to and highlight the selected location.
 
-**SDK Concepts Introduced:**
+**SDK Classes and Methods Introduced:**
 
-* Expanding the unified `handleLocationClick` function to trigger the display of detailed location information.
 * Retrieving and displaying specific location properties (e.g., `location.properties.name`, `location.properties.description`) within a dedicated details panel.
-* Implementing UI state management to dynamically show and hide distinct views (search vs. details) within the panel.
 * Applying `mapsIndoorsInstance.deselectLocation()` to manage map state when closing the details view.
+
+**Implementation Patterns:**
+
+* Expanding the unified click handler to show location details
+* Implementing UI state management between search and details views
+* Creating a responsive details panel UI
+* Handling transitions between different UI states
 
 ## Prerequisites
 
@@ -234,7 +239,7 @@ const mapViewOptions = {
     zoom: 17,
     // Maximum zoom level
     maxZoom: 22
-    };
+};
 
 // Set the MapsIndoors API key
 mapsindoors.MapsIndoors.setMapsIndoorsApiKey('YOUR_MAPSINDOORS_API_KEY'); // Replace with your MapsIndoors API key
@@ -403,13 +408,6 @@ detailsCloseButton.addEventListener('click', () => {
 });
 
 // Show the details of a location
-function showDetails(location) {
-    detailsNameElement.textContent = location.properties.name;
-    detailsDescriptionElement.textContent = location.properties.description || 'No description available.';
-    showDetailsUI();
-}
-
-// Updates the details UI with the selected location's information and shows it.
 function showDetails(location) {
     detailsNameElement.textContent = location.properties.name;
     detailsDescriptionElement.textContent = location.properties.description || 'No description available.';

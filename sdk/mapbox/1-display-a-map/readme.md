@@ -4,12 +4,12 @@
 
 **SDK Concepts Introduced:**
 
-* Setting the MapsIndoors API Key.
+* Setting the MapsIndoors API Key using `mapsindoors.MapsIndoors.setMapsIndoorsApiKey()`.
 * Initializing the Mapbox map view using `mapsindoors.mapView.MapboxV3View`.
 * Creating the main `mapsindoors.MapsIndoors` instance.
 * Adding a `mapsindoors.FloorSelector` control.
 * Using `mapsIndoorsInstance.goTo()` to pan and zoom the map to the selected location.
-* Handling map clicks to center the map on a clicked POI (location).
+* Handling map clicks to center the map on a clicked POI (location) using `mapsIndoorsInstance.on('click', callback)`
 
 ## Prerequisites
 
