@@ -402,7 +402,7 @@ detailsCloseButton.addEventListener('click', () => {
     showSearchUI();
 });
 
-// Refactored: showDetails only handles UI presentation
+// Show the details of a location
 function showDetails(location) {
     detailsNameElement.textContent = location.properties.name;
     detailsDescriptionElement.textContent = location.properties.description || 'No description available.';
